@@ -1,0 +1,152 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">&lt;!-- &lt;![CDATA[</span><span class="WHIT">
+<span class='line'>  2</span> </span><span class="COMM">/**
+<span class='line'>  3</span>  * @fileoverview This file contains the information necessary to add client-side
+<span class='line'>  4</span>  * keyboard restriction functionality to a web page.
+<span class='line'>  5</span>  */</span><span class="WHIT">
+<span class='line'>  6</span> </span><span class="COMM">/**
+<span class='line'>  7</span>  * Accept 'Y' or 'N' and return issue an error message.
+<span class='line'>  8</span>  * @requires keybEdit
+<span class='line'>  9</span>  */</span><span class="WHIT">
+<span class='line'> 10</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">keybYN</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">keybEdit</span><span class="PUNC">(</span><span class="STRN">'yn'</span><span class="PUNC">,</span><span class="STRN">'Valid values are '</span><span class="NAME">Y</span><span class="STRN">' or '</span><span class="NAME">N</span><span class="STRN">'.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 11</span> </span><span class="COMM">/**
+<span class='line'> 12</span>  * Accept numeric input and return issue an error message.
+<span class='line'> 13</span>  * @requires keybEdit
+<span class='line'> 14</span>  */</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">keybNumeric</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">keybEdit</span><span class="PUNC">(</span><span class="STRN">'01234567890'</span><span class="PUNC">,</span><span class="STRN">'Numeric input only.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="COMM">/**
+<span class='line'> 17</span>  * Accept numeric input and return issue an error message.
+<span class='line'> 18</span>  * @requires keybEdit
+<span class='line'> 19</span>  */</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">keybAlpha</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">keybEdit</span><span class="PUNC">(</span><span class="STRN">'abcdefghijklmnopqurstuvwxyz'</span><span class="PUNC">,</span><span class="STRN">'Alpha input only.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="COMM">/**
+<span class='line'> 22</span>  * Accept alphabetic input and return issue an error message.
+<span class='line'> 23</span>  * @requires keybEdit
+<span class='line'> 24</span>  */</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">keybAlphaNumeric</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">keybEdit</span><span class="PUNC">(</span><span class="STRN">'abcdefghijklmnopqurstuvwxyz01234567890/ -,.=!@#$%^&*()_+'</span><span class="STRN">":;','Alpha-numeric input only.');
+<span class='line'> 26</span> /**
+<span class='line'> 27</span>  * Accept alphabetic or numeric input and return issue an error message.
+<span class='line'> 28</span>  * @requires keybEdit
+<span class='line'> 29</span>  */
+<span class='line'> 30</span> var keybDecimal = new keybEdit('01234567890.','Decimal input only.');
+<span class='line'> 31</span> /**
+<span class='line'> 32</span>  * Accept decimal input and return issue an error message.
+<span class='line'> 33</span>  * @requires keybEdit
+<span class='line'> 34</span>  */
+<span class='line'> 35</span> var keybDate =  new keybEdit('01234567890/','Date input only');;
+<span class='line'> 36</span> /**
+<span class='line'> 37</span>  * Accept date input and return issue an error message.
+<span class='line'> 38</span>  * @requires keybEdit
+<span class='line'> 39</span>  */
+<span class='line'> 40</span> var keybYNNM = new keybEdit('yn','');
+<span class='line'> 41</span> /**
+<span class='line'> 42</span>  * Accept numeric input.
+<span class='line'> 43</span>  * @requires keybEdit
+<span class='line'> 44</span>  */
+<span class='line'> 45</span> var keybNumericNM = new keybEdit('01234567890','');
+<span class='line'> 46</span> /**
+<span class='line'> 47</span>  * Accept alphabetic input.
+<span class='line'> 48</span>  * @requires keybEdit
+<span class='line'> 49</span>  */
+<span class='line'> 50</span> var keybAlphaNM = new keybEdit('abcdefghijklmnopqurstuvwxyz','');
+<span class='line'> 51</span> /**
+<span class='line'> 52</span>  * Accept alphabetic or numeric input.
+<span class='line'> 53</span>  * @requires keybEdit
+<span class='line'> 54</span>  */
+<span class='line'> 55</span> var keybAlphaNumericNM = new keybEdit('abcdefghijklmnopqurstuvwxyz01234567890/ -,.=!@#$%^&*()_+'"</span><span class="PUNC">:</span><span class="PUNC">;</span><span class="STRN">','</span><span class="STRN">');
+<span class='line'> 56</span> /**
+<span class='line'> 57</span>  * Accept decimal input.
+<span class='line'> 58</span>  * @requires keybEdit
+<span class='line'> 59</span>  */
+<span class='line'> 60</span> var keybDecimalNM = new keybEdit('</span><span class="NUMB">01234567890.</span><span class="STRN">','</span><span class="STRN">');
+<span class='line'> 61</span> /**
+<span class='line'> 62</span>  * Accept date input.
+<span class='line'> 63</span>  * @requires keybEdit
+<span class='line'> 64</span>  */
+<span class='line'> 65</span> var keybDateNM =  new keybEdit('</span><span class="NUMB">01234567890</span><span class="PUNC">/</span><span class="STRN">','</span><span class="STRN">');;
+<span class='line'> 66</span> /**
+<span class='line'> 67</span>  * keybEdit
+<span class='line'> 68</span>  * @class The purpose of this function is to be a constructor for the keybEdit
+<span class='line'> 69</span>  * object. keybEdit objects are used by the function editKeyBoard to
+<span class='line'> 70</span>  * determine which keystrokes are valid for form objects. In addition, if an
+<span class='line'> 71</span>  * error occurs, they provide the error message.
+<span class='line'> 72</span>  * @constructor
+<span class='line'> 73</span>  * @param {string} strValid Valid input characters
+<span class='line'> 74</span>  * @param {string} strMsg Error message
+<span class='line'> 75</span>  */
+<span class='line'> 76</span> function keybEdit(strValid, strMsg) {
+<span class='line'> 77</span>       //    Variables
+<span class='line'> 78</span>       var reWork = new RegExp('</span><span class="PUNC">[</span><span class="NAME">a</span><span class="PUNC">-</span><span class="NAME">z</span><span class="PUNC">]</span><span class="STRN">','</span><span class="NAME">gi</span><span class="STRN">');       //    Regular expression
+<span class='line'> 79</span>       //    Properties
+<span class='line'> 80</span>       if(reWork.test(strValid))
+<span class='line'> 81</span>              this.valid = strValid.toLowerCase() + strValid.toUpperCase();
+<span class='line'> 82</span>       else
+<span class='line'> 83</span>              this.valid = strValid;
+<span class='line'> 84</span>       if((strMsg == null) || (typeof(strMsg) == '</span><span class="NAME">undefined</span><span class="STRN">'))
+<span class='line'> 85</span>              this.message = '</span><span class="STRN">';
+<span class='line'> 86</span>       else
+<span class='line'> 87</span>              this.message = strMsg;
+<span class='line'> 88</span>       /**
+<span class='line'> 89</span>        * @ignore
+<span class='line'> 90</span>        */
+<span class='line'> 91</span>       this.getValid = keybEditGetValid;
+<span class='line'> 92</span>       /**
+<span class='line'> 93</span>        * @ignore
+<span class='line'> 94</span>        */
+<span class='line'> 95</span>       this.getMessage = keybEditGetMessage;
+<span class='line'> 96</span>       /**
+<span class='line'> 97</span>        * Return a boolean indicating whether or not a key stroke is valid.
+<span class='line'> 98</span>        * @method getValid
+<span class='line'> 99</span>        * @return string-boolean Indicates whether or not a key is valid.
+<span class='line'>100</span>        */
+<span class='line'>101</span>       function keybEditGetValid() {
+<span class='line'>102</span>              return this.valid.toString();
+<span class='line'>103</span>       }
+<span class='line'>104</span>       /**
+<span class='line'>105</span>        * Return an error message associated with a key stroke.
+<span class='line'>106</span>        * @method getMessage
+<span class='line'>107</span>        * @return string Error message.
+<span class='line'>108</span>        */
+<span class='line'>109</span>       function keybEditGetMessage() {
+<span class='line'>110</span>              return this.message;
+<span class='line'>111</span>       }
+<span class='line'>112</span> }
+<span class='line'>113</span> /**
+<span class='line'>114</span>  * The purpose of this function is to edit edit keyboard input to determine if
+<span class='line'>115</span>  * the keystrokes are valid.
+<span class='line'>116</span>  * @requires keybEdit
+<span class='line'>117</span>  * @param {Object} evt
+<span class='line'>118</span>  * @param {Object} objKeyb
+<span class='line'>119</span>  */
+<span class='line'>120</span> function editKeyBoard(evt, objKeyb) {
+<span class='line'>121</span>       var strWork = objKeyb.getValid();
+<span class='line'>122</span>       var strMsg = '</span><span class="STRN">';                                   // Error message
+<span class='line'>123</span>       var blnValidChar = false;                    // Valid character flag
+<span class='line'>124</span>       var intCode = evt.charCode == undefined ? evt.keyCode : evt.charCode;
+<span class='line'>125</span>       // Part 1: Validate input
+<span class='line'>126</span>       if(!blnValidChar)
+<span class='line'>127</span>              switch(true) {
+<span class='line'>128</span>                    case(intCode == 8):
+<span class='line'>129</span>                    case(intCode == 9):
+<span class='line'>130</span>                    case(intCode == 10):
+<span class='line'>131</span>                    case(intCode == 13):
+<span class='line'>132</span>                           blnValidChar = true;
+<span class='line'>133</span>                           break;
+<span class='line'>134</span>                    default:
+<span class='line'>135</span>                           for(i=0;i &lt; strWork.length;i++)
+<span class='line'>136</span>                                 if(intCode == strWork.charCodeAt(i)) {
+<span class='line'>137</span>                                       blnValidChar = true;
+<span class='line'>138</span>                                       break;
+<span class='line'>139</span>                                 }
+<span class='line'>140</span>                           break;
+<span class='line'>141</span>              }
+<span class='line'>142</span>       // Part 2: Build error message
+<span class='line'>143</span>       if(!blnValidChar) {
+<span class='line'>144</span>              if(objKeyb.getMessage().toString().length != 0)
+<span class='line'>145</span>                    alert('</span><span class="NAME">Error</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="TOKN"></span></pre></body></html>

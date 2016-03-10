@@ -1,0 +1,230 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+
+<script type="text/javascript" src="../engine/math.js"></script>
+<script type="text/javascript" src="../engine/body.js"></script>
+<script type="text/javascript" src="../engine/world.js"></script>
+<script type="text/javascript" src="../engine/collision.js"></script>
+<script type="text/javascript" src="../engine/contact.js"></script>
+<script type="text/javascript" src="../engine/constraint.js"></script>
+<script type="text/javascript" src="../engine/ragdall.js"></script>
+
+<script type="text/javascript">
+
+var elapsed_time = 1/60;
+var canvas;
+var ctx;
+var	ex = 10;
+var ey = 10;
+var ox = 20;
+var oy = 20;
+
+// posicion del mouse
+var mouse_x = 0;
+var mouse_y = 0;
+
+var gravity = new Vector2( 0, 0 );
+var fixed_dt = 1.0/60.0;								// avance del tiempo constante
+var _world = new World();
+var init = false;
+
+// punto de aplicacion
+var pos_x = 0;
+var pos_y = 0;
+// direccion e intensidad
+var angulo = 0;
+var intensidad = 10;
+
+
+function Update() 
+{
+    _world.Update(elapsed_time);
+}
+
+function Render() 
+{
+    if (canvas.getContext)
+    {
+        // borro la pantalla
+        ctx.fillStyle = 'rgba(0,0,0,255)';
+        ctx.fillRect(0,0,2000,2000);
+
+		// dibujo la escena esquematica con el motor 
+	    _world.Render(ctx,ox,oy,ex,ey);
+		
+		// dibujo la fuerza, punto de aplicacion
+        ctx.strokeStyle = '#54280F';
+        ctx.beginPath();
+        ctx.lineWidth = 1*ex;
+		var pos_x0 = pos_x + Math.cos(angulo) * 3;
+		var pos_y0 = pos_y + Math.sin(angulo) * 3;
+		var pos_x1 = pos_x0 + Math.cos(angulo) * intensidad;
+		var pos_y1 = pos_y0 + Math.sin(angulo) * intensidad;
+		
+        ctx.moveTo(ox + pos_x0 * ex, oy + pos_y0 * ey);
+        ctx.lineTo(ox + pos_x1 * ex, oy + pos_y1 * ey);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+		
+    }
+}
+
+
+function RenderLoop() 
+{
+    if (!init)
+		return;
+    
+	Update();
+	Render();
+}
+
+
+function doKeyDown(e) 
+{
+    e = e || window.event;
+	var xPos = (mouse_x-ox)/ ex; 
+	var yPos = (mouse_y-oy)/ ey; 
+	
+	if(e.keyCode==65)
+	{
+		// "A"
+		angulo += 0.05;
+	}
+	else
+	if(e.keyCode==83)
+	{
+		// "S"
+		angulo -= 0.05;
+	}
+	else
+	if(e.keyCode==87)
+	{
+		// "W"
+		intensidad += 10;
+	}
+	else
+	if(e.keyCode==90)
+	{
+		// "Z"
+		intensidad -= 10;
+		if(intensidad<1)
+			intensidad = 1;
+	}
+	
+	
+}
+
+function onMouseMove() 
+{
+	var xPos = window.event.offsetX;
+	var yPos = window.event.offsetY;
+
+    // actualizo la posicion del mouse
+	mouse_x = xPos;
+	mouse_y = yPos;
+}
+
+function onMouseDown(e) {
+    e = e || window.event;
+    switch (e.which)
+    {
+        case 1:
+            // Left button
+            break;
+        case 2:
+            // middle button
+            break;
+        case 3:
+            // right button
+            break;
+    }
+}
+
+
+function onMouseUp(e) {
+    e = e || window.event;
+    switch (e.which) {
+        case 1:
+            // Left button
+            break;
+        case 2:
+            // middle button
+            break;
+        case 3:
+            // right button
+            break;
+    }
+}
+
+function loadscene()
+{
+	// posicion y tamaño de la mesa de pool
+	var OX = 2;
+	var OY = 2;
+	var DX = 70;
+	var DY = 40;
+	var r = 3;
+	
+	// arriba
+	var vert = [new Vector2(OX,OY) , new Vector2(OX + DX,OY) , new Vector2(OX + DX - 2*r,OY+r) , new Vector2(OX + 2*r,OY+r)]
+    var p = _world.AddPoly(vert,4);
+    p.SetStatic();
+	
+	// abajo
+	vert = [new Vector2(OX,OY+DY) , new Vector2(OX + DX,OY+DY) , new Vector2(OX + DX - 2*r,OY+DY -r) , new Vector2(OX + 2*r,OY+DY-r)]
+    p = _world.AddPoly(vert,4);
+    p.SetStatic();
+	
+	// izquierda
+	vert = [new Vector2(OX,OY) , new Vector2(OX ,OY+DY) , new Vector2(OX +r,OY+DY -2*r) , new Vector2(OX +r,OY+2*r)]
+    p = _world.AddPoly(vert,4);
+    p.SetStatic();
+
+	// derecha
+	vert = [new Vector2(OX+DX,OY) , new Vector2(OX+DX ,OY+DY) , new Vector2(OX+DX-r,OY+DY -2*r) , new Vector2(OX +DX -r,OY+2*r)]
+    p = _world.AddPoly(vert,4);
+    p.SetStatic();
+	
+	
+	// bola blanca
+    p = _world.AddCircle(OX+10,OY+DY/2,2);
+	
+	// posicion de la fuerza a aplicar 
+	pos_x = p.position.x;
+	pos_y = p.position.y;
+	// intensidad 
+	intensidad = 10;
+	// direccion
+	angulo = 1.2;
+	
+	
+	// anulo la gravedad
+	gravity.y = 0;
+	
+    init = true;
+
+}
+
+function main()
+{   
+	document.addEventListener( "keydown", doKeyDown, true);
+	document.addEventListener("mousemove", onMouseMove, true);
+	document.addEventListener("mousedown", onMouseDown, true);
+	document.addEventListener("mouseup", onMouseUp, true);
+
+    canvas = document.getElementById('mycanvas');
+    ctx = canvas.getContext('2d');
+	loadscene();
+    setInterval(RenderLoop, elapsed_time * 1000);
+} 
+
+
+</script>
+</head>
+<body onload="main();">
+	<canvas id="mycanvas" width="1000" height="700"></canvas>
+</body>
+</html>
+ 

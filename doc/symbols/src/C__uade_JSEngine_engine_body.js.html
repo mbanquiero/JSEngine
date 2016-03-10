@@ -1,0 +1,893 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="TOKN">﻿</span><span class="WHIT">
+<span class='line'>  2</span> </span><span class="COMM">/**
+<span class='line'>  3</span>  * @fileoverview body.js
+<span class='line'>  4</span> &lt;P> Implementa formas geometricas basicas&lt;/P>
+<span class='line'>  5</span> &lt;P>  -circulo&lt;/P>
+<span class='line'>  6</span> &lt;P>  -caja&lt;/P>
+<span class='line'>  7</span> &lt;P>  -triangulo&lt;/P>
+<span class='line'>  8</span> &lt;P>  -poligono&lt;/P>
+<span class='line'>  9</span> &lt;P>  Implementa dinamica de cuerpo rigido&lt;/P>
+<span class='line'> 10</span> */</span><span class="WHIT">
+<span class='line'> 11</span> 
+<span class='line'> 12</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">MAX_VERTEX_COUNT</span><span class="WHIT">	</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">32</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">GPE_CIRCLE</span><span class="WHIT">		    </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">GPE_POLYGON</span><span class="WHIT">			</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 15</span> 
+<span class='line'> 16</span> 
+<span class='line'> 17</span> </span><span class="COMM">// Conviene desacoplar la "geometria" del objeto, de la clase body pp dicha. </span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="COMM">// Las clases geometrias encapsulan las funciones de computar masa, dibujar, </span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="COMM">// y demas que hacen a la geometria del cuerpo.</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="COMM">/**
+<span class='line'> 22</span>  * GeoCircle
+<span class='line'> 23</span>  * @class Shape circulo
+<span class='line'> 24</span>  * @constructor
+<span class='line'> 25</span>  * @param {float} r radio
+<span class='line'> 26</span>  */</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">GeoCircle</span><span class="PUNC">(</span><span class="NAME">r</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="WHIT">    </span><span class="NAME">this.matWorld</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Matrix2</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="WHIT">    </span><span class="NAME">this.radius</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">r</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 31</span> </span><span class="WHIT">    </span><span class="NAME">this.drawCM</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">             </span><span class="COMM">// dibujo el centro de masa</span><span class="WHIT">
+<span class='line'> 32</span> </span><span class="WHIT">    </span><span class="NAME">this.drawOrient</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">         </span><span class="COMM">// dibujo la rayita del orient</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="WHIT">	</span><span class="NAME">this.cm</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">		</span><span class="COMM">// centro de masas</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 35</span> 
+<span class='line'> 36</span> </span><span class="COMM">/**
+<span class='line'> 37</span>  * Computo los inversos de la masa y la inercia. En la mayor parte de las ecuaciones de la dinamica de cuerpos rigidos
+<span class='line'> 38</span>  * La masa y la inercia aparecen dividiendo, con lo cual es mas practico almacenar 1/mass y 1/inertia 
+<span class='line'> 39</span>  * @method ComputeMass
+<span class='line'> 40</span>  * @param {float} density densidad 
+<span class='line'> 41</span>  * @param {Body} body rigid body asociado
+<span class='line'> 42</span> */</span><span class="WHIT">
+<span class='line'> 43</span> </span><span class="NAME">GeoCircle.prototype.ComputeMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">density</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">body</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 44</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">r2</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.radius</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">this.radius</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="WHIT">    </span><span class="NAME">body.mass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.PI</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">r2</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">density</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">body.mass</span><span class="PUNC">!=</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="WHIT">        </span><span class="NAME">body.inverseMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">body.mass</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">    </span><span class="COMM">// Momento de inercia</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="WHIT">    </span><span class="NAME">body.inertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">body.mass</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">r2</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">body.inertia</span><span class="PUNC">!=</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="WHIT">        </span><span class="NAME">body.inverseInertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">body.inertia</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 53</span> 
+<span class='line'> 54</span> 
+<span class='line'> 55</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 56</span> 
+<span class='line'> 57</span> </span><span class="COMM">/**
+<span class='line'> 58</span>  * Computo el bounding rect del cuerpo 
+<span class='line'> 59</span>  * @method ComputeSize
+<span class='line'> 60</span>  * @param {Body} body rigid body asociado
+<span class='line'> 61</span> */</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="NAME">GeoCircle.prototype.ComputeSize</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">body</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">    </span><span class="NAME">body.width</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">body.height</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">this.radius</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 65</span> 
+<span class='line'> 66</span> 
+<span class='line'> 67</span> </span><span class="COMM">/**
+<span class='line'> 68</span>  * Orientacion 
+<span class='line'> 69</span>  * @method SetOrient
+<span class='line'> 70</span>  * @param {float} angle angulo en radianes
+<span class='line'> 71</span> */</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="NAME">GeoCircle.prototype.SetOrient</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">    </span><span class="NAME">this.matWorld.Rotation</span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 76</span> 
+<span class='line'> 77</span> </span><span class="COMM">/**
+<span class='line'> 78</span>  * Dibuja por pantalla. 
+<span class='line'> 79</span>  * Nota: Usa las variables globales ox,oy,ex,ey, y ctx (canvas)
+<span class='line'> 80</span>  * @method Render
+<span class='line'> 81</span>  * @param {Body} body rigid body asociado
+<span class='line'> 82</span> */</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="NAME">GeoCircle.prototype.Render</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">body</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">pos</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">body.position</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">r</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.radius</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">    </span><span class="COMM">// dibujo un circulo en la posicion del centro de masas del cuerpo</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">    </span><span class="NAME">ctx.fillStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">body.color</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">    </span><span class="NAME">ctx.strokeStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'#ff00ff'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">    </span><span class="NAME">ctx.beginPath</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">    </span><span class="NAME">ctx.arc</span><span class="PUNC">(</span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pos.x</span><span class="PUNC">*</span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pos.y</span><span class="PUNC">*</span><span class="NAME">ey</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">r</span><span class="PUNC">*</span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Math.PI</span><span class="PUNC">*</span><span class="NUMB">2</span><span class="PUNC">,</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">    </span><span class="NAME">ctx.closePath</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">    </span><span class="NAME">ctx.fill</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">    </span><span class="NAME">ctx.stroke</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 95</span> 
+<span class='line'> 96</span> </span><span class="WHIT">    </span><span class="COMM">// dibujo una linea para captar la orientacion del circulo</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.drawOrient</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">        </span><span class="NAME">ctx.beginPath</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">        </span><span class="NAME">ctx.strokeStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'#ff0000'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">        </span><span class="NAME">ctx.moveTo</span><span class="PUNC">(</span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pos.x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pos.y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ey</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pos.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">Math.cos</span><span class="PUNC">(</span><span class="NAME">body.orient</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">r</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pos.y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">Math.sin</span><span class="PUNC">(</span><span class="NAME">body.orient</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">r</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">        </span><span class="NAME">ctx.lineTo</span><span class="PUNC">(</span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ey</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">        </span><span class="NAME">ctx.closePath</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">        </span><span class="NAME">ctx.stroke</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">    </span><span class="COMM">// dibujo el centro de gravedad</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">this.drawCM</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="WHIT">        </span><span class="NAME">drawCenterOfMass</span><span class="PUNC">(</span><span class="NAME">pos.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">pos.y</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0.5</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">body.orient</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>110</span> 
+<span class='line'>111</span> 
+<span class='line'>112</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>113</span> 
+<span class='line'>114</span> </span><span class="COMM">/**
+<span class='line'>115</span>  * @method GetType
+<span class='line'>116</span>  * @return {integer} GPE_CIRCLE
+<span class='line'>117</span> */</span><span class="WHIT">
+<span class='line'>118</span> 
+<span class='line'>119</span> </span><span class="NAME">GeoCircle.prototype.GetType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">GPE_CIRCLE</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>122</span> 
+<span class='line'>123</span> </span><span class="COMM">/**
+<span class='line'>124</span>  * GeoPolygon
+<span class='line'>125</span>  * Crea un poligono vacio
+<span class='line'>126</span>  * @class Shape Poligono Convexo
+<span class='line'>127</span>  * @constructor
+<span class='line'>128</span>  */</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">GeoPolygon</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">    </span><span class="NAME">this.m_vertexCount</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">	</span><span class="NAME">this.cm</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">		</span><span class="COMM">// centro de masas</span><span class="WHIT">
+<span class='line'>135</span> </span><span class="WHIT">	</span><span class="WHIT">
+<span class='line'>136</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>137</span> 
+<span class='line'>138</span> </span><span class="COMM">/**
+<span class='line'>139</span>  * GeoPolygon
+<span class='line'>140</span>  * Crea una caja rectangular
+<span class='line'>141</span>  * @method
+<span class='line'>142</span>  * @param {float} w Width
+<span class='line'>143</span>  * @param {float} h Height
+<span class='line'>144</span>  */</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="NAME">GeoPolygon.prototype.CreateBox</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">w</span><span class="PUNC">,</span><span class="NAME">h</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'>146</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">    </span><span class="NAME">this.m_vertexCount</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">4</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">hw</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">w</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">;</span><span class="WHIT">			</span><span class="COMM">// half width</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">hh</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">h</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">;</span><span class="WHIT">			</span><span class="COMM">// half height</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">hw</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">hh</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">hw</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">hh</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">2</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT">  </span><span class="NAME">hw</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="NAME">hh</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">3</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">hw</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="NAME">hh</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT">  </span><span class="NUMB">0.0</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="PUNC">-</span><span class="NUMB">1.0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT">  </span><span class="NUMB">1.0</span><span class="PUNC">,</span><span class="WHIT">   </span><span class="NUMB">0.0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">2</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT">  </span><span class="NUMB">0.0</span><span class="PUNC">,</span><span class="WHIT">   </span><span class="NUMB">1.0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">3</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1.0</span><span class="PUNC">,</span><span class="WHIT">   </span><span class="NUMB">0.0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">    </span><span class="NAME">this.matWorld</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Matrix2</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">    </span><span class="NAME">this.Close</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>161</span> 
+<span class='line'>162</span> </span><span class="COMM">/**
+<span class='line'>163</span>  * GeoPolygon
+<span class='line'>164</span>  * Crea un triangulo
+<span class='line'>165</span>  * @method
+<span class='line'>166</span>  * @param {Vector2} p1 Punto1
+<span class='line'>167</span>  * @param {Vector2} p2 Punto2
+<span class='line'>168</span>  * @param {Vector2} p3 Punto3
+<span class='line'>169</span>  */</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="NAME">GeoPolygon.prototype.CreateTri</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">p1</span><span class="PUNC">,</span><span class="NAME">p2</span><span class="PUNC">,</span><span class="NAME">p3</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">    </span><span class="NAME">this.m_vertexCount</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">3</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p1.Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p2.Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">2</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p3.Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_normal</span><span class="PUNC">(</span><span class="NAME">vec2_substract</span><span class="PUNC">(</span><span class="NAME">p1</span><span class="PUNC">,</span><span class="NAME">p2</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_normal</span><span class="PUNC">(</span><span class="NAME">vec2_substract</span><span class="PUNC">(</span><span class="NAME">p2</span><span class="PUNC">,</span><span class="NAME">p3</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">2</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_normal</span><span class="PUNC">(</span><span class="NAME">vec2_substract</span><span class="PUNC">(</span><span class="NAME">p3</span><span class="PUNC">,</span><span class="NAME">p1</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">normalize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">normalize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">2</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">normalize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">    </span><span class="NAME">this.matWorld</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Matrix2</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">    </span><span class="NAME">this.Close</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>184</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>185</span> 
+<span class='line'>186</span> </span><span class="COMM">/**
+<span class='line'>187</span>  * GeoPolygon
+<span class='line'>188</span>  * Crea un Convex HULL a partir de una nube de puntos
+<span class='line'>189</span>  * @method
+<span class='line'>190</span>  * @param {Vector2[]} p Array de puntos
+<span class='line'>191</span>  * @param {int} count Cantidad de puntos del Array
+<span class='line'>192</span>  */</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="NAME">GeoPolygon.prototype.CreatePoly</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">p</span><span class="PUNC">,</span><span class="NAME">count</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">    </span><span class="COMM">// copio los vertices</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">    </span><span class="NAME">this.m_vertexCount</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">count</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">count</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">        </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">    </span><span class="COMM">// cierro la figura</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">count</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>201</span> 
+<span class='line'>202</span> </span><span class="WHIT">    </span><span class="COMM">// calculo las normales</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">count</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">    </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">face</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_substract</span><span class="PUNC">(</span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>206</span> </span><span class="WHIT">        </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_normal</span><span class="PUNC">(</span><span class="NAME">face</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="WHIT">        </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">normalize</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NAME">count</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>210</span> </span><span class="WHIT">    </span><span class="NAME">this.matWorld</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Matrix2</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>211</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>212</span> 
+<span class='line'>213</span> </span><span class="COMM">/**
+<span class='line'>214</span>  * Cierra el poligono
+<span class='line'>215</span>  * @method Close
+<span class='line'>216</span>  */</span><span class="WHIT">
+<span class='line'>217</span> </span><span class="NAME">GeoPolygon.prototype.Close</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>218</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">this.m_vertexCount</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="WHIT">    </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NAME">this.m_vertexCount</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.normals</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>222</span> 
+<span class='line'>223</span> 
+<span class='line'>224</span> </span><span class="COMM">/**
+<span class='line'>225</span>  * Orientacion 
+<span class='line'>226</span>  * @method SetOrient
+<span class='line'>227</span>  * @param {float} angle angulo en radianes
+<span class='line'>228</span> */</span><span class="WHIT">
+<span class='line'>229</span> </span><span class="NAME">GeoPolygon.prototype.SetOrient</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">    </span><span class="NAME">this.matWorld.Rotation</span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>232</span> 
+<span class='line'>233</span> </span><span class="COMM">/**
+<span class='line'>234</span>  &lt;P> Computo los inversos de la masa y la inercia. En la mayor parte de las ecuaciones de la dinamica de cuerpos rigidos
+<span class='line'>235</span>   La masa y la inercia aparecen dividiendo, con lo cual es mas practico almacenar 1/mass y 1/inertia &lt;/P>
+<span class='line'>236</span>  &lt;P>  Calcula el area  &lt;/P> 
+<span class='line'>237</span>  &lt;P>  http://en.wikipedia.org/wiki/Centroid&lt;/P> 
+<span class='line'>238</span>  &lt;P>  y el momento de inercia&lt;/P> 
+<span class='line'>239</span>  &lt;P>  http://en.wikipedia.org/wiki/Second_moment_of_area&lt;/P> 
+<span class='line'>240</span>  &lt;P>  formulas y ecuaciones &lt;/P> 
+<span class='line'>241</span>  &lt;P>  http://richardson.eng.ua.edu/Former_Courses//CE_331_fa09/Projects/A_and_I_of_Polygon.pdf&lt;/P> 
+<span class='line'>242</span>  &lt;P> surveyor-s formula para el calculo de area de un poligono&lt;/P> 
+<span class='line'>243</span>  &lt;P>  http://steiner.math.nthu.edu.tw/disk5/js/cardioid/12.pdf&lt;/P> 
+<span class='line'>244</span>  *
+<span class='line'>245</span>  * @method ComputeMass
+<span class='line'>246</span>  * @param {float} density densidad 
+<span class='line'>247</span>  * @param {Body} body rigid body asociado
+<span class='line'>248</span> */</span><span class="WHIT">
+<span class='line'>249</span> 
+<span class='line'>250</span> </span><span class="NAME">GeoPolygon.prototype.ComputeMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">density</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">body</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>251</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>252</span> 
+<span class='line'>253</span> 
+<span class='line'>254</span> </span><span class="WHIT">    </span><span class="COMM">// Se supone que el pto N = pto 0 , ya que el poligono es cerrado</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="WHIT">    </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">this.m_vertexCount</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">Clone</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>256</span> 
+<span class='line'>257</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">c</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NUMB">0.0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0.0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// centro de masa</span><span class="WHIT">
+<span class='line'>258</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">area</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0.0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>259</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">Ixy</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0.0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>260</span> 
+<span class='line'>261</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">this.m_vertexCount</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>262</span> </span><span class="WHIT">    </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>263</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">p1</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>264</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">p2</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">+</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>265</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">D</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cross_vec</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">p1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p2</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>266</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">triangleArea</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0.5</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">D</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>267</span> </span><span class="WHIT">        </span><span class="NAME">area</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">triangleArea</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="WHIT">        </span><span class="NAME">c.add</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">vec2_multiply</span><span class="PUNC">(</span><span class="NAME">vec2_add</span><span class="PUNC">(</span><span class="NAME">p1</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p2</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">triangleArea</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">3.0</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">xx</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p1.x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">p1.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">p2.x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">p1.x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">p2.x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">p2.x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>270</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">yy</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p1.y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">p1.y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">p2.y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">p1.y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">p2.y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">p2.y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>271</span> </span><span class="WHIT">        </span><span class="NAME">Ixy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NUMB">0.25</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">D</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">3.0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">xx</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">yy</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>272</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>273</span> </span><span class="WHIT">    </span><span class="NAME">c.multiply</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="PUNC">/</span><span class="NAME">area</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>274</span> </span><span class="WHIT">    </span><span class="WHIT">
+<span class='line'>275</span> </span><span class="WHIT">    </span><span class="NAME">body.mass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">density</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">area</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>276</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">body.mass</span><span class="PUNC">!=</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">        </span><span class="NAME">body.inverseMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">body.mass</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>278</span> 
+<span class='line'>279</span> </span><span class="WHIT">    </span><span class="COMM">// Momento de inercia</span><span class="WHIT">
+<span class='line'>280</span> </span><span class="WHIT">    </span><span class="NAME">body.inertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">density</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">Ixy</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">body.inertia</span><span class="PUNC">!=</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>282</span> </span><span class="WHIT">        </span><span class="NAME">body.inverseInertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">body.inertia</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>283</span> 
+<span class='line'>284</span> </span><span class="WHIT">	</span><span class="WHIT">
+<span class='line'>285</span> </span><span class="WHIT">    </span><span class="COMM">// Ajusto la posicion de los vertices para que la posicion de origen (0,0) coincida con el centro de masas</span><span class="WHIT">
+<span class='line'>286</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">this.m_vertexCount</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>287</span> </span><span class="WHIT">    </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">        </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">c.x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>289</span> </span><span class="WHIT">        </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">c.y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>291</span> </span><span class="WHIT">	</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">	</span><span class="NAME">this.cm.x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">c.x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">	</span><span class="NAME">this.cm.y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">c.y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">	</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>296</span> 
+<span class='line'>297</span> </span><span class="COMM">/**
+<span class='line'>298</span>  * Setea el centro de masas en un lugar diferente del (0,0)
+<span class='line'>299</span>  * @method SetCenterOfMass
+<span class='line'>300</span>  * @param {Vector2} c centro de masas
+<span class='line'>301</span> */</span><span class="WHIT">
+<span class='line'>302</span> </span><span class="NAME">GeoPolygon.prototype.SetCenterOfMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">c</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>303</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>304</span> </span><span class="WHIT">    </span><span class="COMM">// Ajusto la posicion de los vertices para que la posicion de origen (0,0) coincida con el centro de masas</span><span class="WHIT">
+<span class='line'>305</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">this.m_vertexCount</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>306</span> </span><span class="WHIT">    </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>307</span> </span><span class="WHIT">        </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">c.x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>308</span> </span><span class="WHIT">        </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">c.y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>309</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>311</span> 
+<span class='line'>312</span> </span><span class="COMM">/**
+<span class='line'>313</span>  * Computo el bounding rect del cuerpo 
+<span class='line'>314</span>  * @method ComputeSize
+<span class='line'>315</span>  * @param {Body} body rigid body asociado
+<span class='line'>316</span> */</span><span class="WHIT">
+<span class='line'>317</span> 
+<span class='line'>318</span> </span><span class="NAME">GeoPolygon.prototype.ComputeSize</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">body</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>319</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">min_x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">10000</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">min_y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">10000</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">max_x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">10000</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>323</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">max_y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">10000</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>324</span> 
+<span class='line'>325</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">this.m_vertexCount</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>326</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>327</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>328</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">min_x</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>329</span> </span><span class="WHIT">            </span><span class="NAME">min_x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>330</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">max_x</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>331</span> </span><span class="WHIT">            </span><span class="NAME">max_x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>332</span> 
+<span class='line'>333</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">min_y</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>334</span> </span><span class="WHIT">            </span><span class="NAME">min_y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>335</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">max_y</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>336</span> </span><span class="WHIT">            </span><span class="NAME">max_y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>337</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>338</span> </span><span class="WHIT">    </span><span class="NAME">body.width</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">max_x</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">min_x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">    </span><span class="NAME">body.height</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">max_y</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">min_y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>340</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>341</span> 
+<span class='line'>342</span> </span><span class="COMM">/**
+<span class='line'>343</span>  * Dibuja por pantalla. 
+<span class='line'>344</span>  * Nota: Usa las variables globales ox,oy,ex,ey, y ctx (canvas)
+<span class='line'>345</span>  * @method Render
+<span class='line'>346</span>  * @param {Body} body rigid body asociado
+<span class='line'>347</span> */</span><span class="WHIT">
+<span class='line'>348</span> </span><span class="NAME">GeoPolygon.prototype.Render</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">body</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>349</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>350</span> </span><span class="WHIT">    </span><span class="COMM">// dibujo un poligono</span><span class="WHIT">
+<span class='line'>351</span> </span><span class="WHIT">    </span><span class="NAME">ctx.fillStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">body.color</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>352</span> </span><span class="WHIT">    </span><span class="NAME">ctx.strokeStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'#ff00ff'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>353</span> </span><span class="WHIT">    </span><span class="NAME">ctx.beginPath</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>354</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">this.m_vertexCount</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>355</span> </span><span class="WHIT">    </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>356</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">pos</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_add</span><span class="PUNC">(</span><span class="NAME">body.position</span><span class="WHIT">  </span><span class="PUNC">,</span><span class="WHIT">  </span><span class="NAME">vec2_transform</span><span class="PUNC">(</span><span class="NAME">this.matWorld</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>357</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">==</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>358</span> </span><span class="WHIT">            </span><span class="NAME">ctx.moveTo</span><span class="PUNC">(</span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pos.x</span><span class="PUNC">*</span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="PUNC">+</span><span class="NAME">pos.y</span><span class="PUNC">*</span><span class="NAME">ey</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'>359</span> </span><span class="WHIT">        </span><span class="KEYW">else</span><span class="WHIT">
+<span class='line'>360</span> </span><span class="WHIT">            </span><span class="NAME">ctx.lineTo</span><span class="PUNC">(</span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pos.x</span><span class="PUNC">*</span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="PUNC">+</span><span class="NAME">pos.y</span><span class="PUNC">*</span><span class="NAME">ey</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'>361</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>362</span> </span><span class="WHIT">    </span><span class="NAME">ctx.closePath</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">    </span><span class="NAME">ctx.fill</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">    </span><span class="NAME">ctx.stroke</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>365</span> 
+<span class='line'>366</span> </span><span class="WHIT">    </span><span class="COMM">// dibujo el centro de gravedad</span><span class="WHIT">
+<span class='line'>367</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">body.inverseMass</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>368</span> </span><span class="WHIT">        </span><span class="NAME">drawCenterOfMass</span><span class="PUNC">(</span><span class="NAME">body.position.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">body.position.y</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0.5</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">body.orient</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>369</span> 
+<span class='line'>370</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>371</span> 
+<span class='line'>372</span> </span><span class="COMM">/**
+<span class='line'>373</span>  * @method GetType
+<span class='line'>374</span>  * @return {integer} GPE_POLYGON
+<span class='line'>375</span> */</span><span class="WHIT">
+<span class='line'>376</span> </span><span class="NAME">GeoPolygon.prototype.GetType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>377</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">GPE_POLYGON</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>378</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>379</span> 
+<span class='line'>380</span> </span><span class="COMM">// helper para algortimo de colision convexo - convexo </span><span class="WHIT">
+<span class='line'>381</span> </span><span class="COMM">// devuele la el vertice que esta mas lejos en distancia proyectada en direccion dir</span><span class="WHIT">
+<span class='line'>382</span> </span><span class="NAME">GeoPolygon.prototype.getMaxProjection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">dir</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>383</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>384</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">maxProjection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">10000</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>385</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">rta</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>386</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">this.m_vertexCount</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>387</span> </span><span class="WHIT">    </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>388</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">v</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.vertices</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>389</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">projection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">dot</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">v</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">dir</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>390</span> 
+<span class='line'>391</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">projection</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">maxProjection</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>392</span> </span><span class="WHIT">        </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>393</span> </span><span class="WHIT">            </span><span class="NAME">rta</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">v</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>394</span> </span><span class="WHIT">            </span><span class="NAME">maxProjection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">projection</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>395</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>396</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>397</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">rta</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>398</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>399</span> 
+<span class='line'>400</span> 
+<span class='line'>401</span> </span><span class="COMM">/**
+<span class='line'>402</span>  * @class Body
+<span class='line'>403</span>  * Objeto rigid body. La escena esta compuesta de un cierto número de rigid body que interactuan entre si.
+<span class='line'>404</span>  * @property {Object} shape Forma del objeto 
+<span class='line'>405</span>  * @property {float} width Ancho del bounding rect
+<span class='line'>406</span>  * @property {float} height Alto del bounding rect
+<span class='line'>407</span>  * @property {Vector2} position Posicion
+<span class='line'>408</span>  * @property {Vector2} velocity Velocidad (lineal)
+<span class='line'>409</span>  * @property {Vector2} force Fuerza resultante
+<span class='line'>410</span>  * @property {float} angularVelocity Velocidad angular
+<span class='line'>411</span>  * @property {float} torque Tensor de inercia
+<span class='line'>412</span>  * @property {float} orient Angulo de orientacion
+<span class='line'>413</span>  * @property {float} density Densidad 
+<span class='line'>414</span>  * @property {float} inertia Momento de inercia
+<span class='line'>415</span>  * @property {float} inverseInertia 1/inertia
+<span class='line'>416</span>  * @property {float} mass masa
+<span class='line'>417</span>  * @property {float} inverseMass 1/masa
+<span class='line'>418</span>  * @property {float} gravity_factor factor que multiplica la fuerza de gravedad
+<span class='line'>419</span>  * @property {float} staticFriction Coeficiente de friccion estatica
+<span class='line'>420</span>  * @property {float} dynamicFriction Coeficiente de friccion dinamica
+<span class='line'>421</span>  * @property {float} restitution Coeficiente de restitucion
+<span class='line'>422</span>  * @property {float} maxForce maxima fuerza que resiste (resistencia del material)
+<span class='line'>423</span>  * @property {string} name nombre del objeto
+<span class='line'>424</span>  * @property {string} color color del objeto
+<span class='line'>425</span>  * @property {int} id id numérico
+<span class='line'>426</span>  * @property {Image} img Objeto imagen asociado
+<span class='line'>427</span>  * @property {boolean} deleted flag que indica que el objeto esta borrado
+<span class='line'>428</span>  * @property {boolean} visible flag que indica que si objeto es visible
+<span class='line'>429</span>  * @constructor
+<span class='line'>430</span> */</span><span class="WHIT">
+<span class='line'>431</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">Body</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>432</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>433</span> </span><span class="WHIT">    </span><span class="COMM">// propiedades geometricas</span><span class="WHIT">
+<span class='line'>434</span> </span><span class="WHIT">    </span><span class="NAME">this.shape</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>435</span> </span><span class="WHIT">    </span><span class="NAME">this.width</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>436</span> </span><span class="WHIT">    </span><span class="NAME">this.height</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>437</span> 
+<span class='line'>438</span> </span><span class="WHIT">    </span><span class="COMM">// propiedades cinemáticas</span><span class="WHIT">
+<span class='line'>439</span> </span><span class="WHIT">    </span><span class="NAME">this.position</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>440</span> </span><span class="WHIT">    </span><span class="NAME">this.velocity</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>441</span> </span><span class="WHIT">    </span><span class="NAME">this.force</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>442</span> 
+<span class='line'>443</span> </span><span class="WHIT">    </span><span class="COMM">// oriented rigid body</span><span class="WHIT">
+<span class='line'>444</span> </span><span class="WHIT">    </span><span class="NAME">this.angularVelocity</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>445</span> </span><span class="WHIT">    </span><span class="NAME">this.torque</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>446</span> </span><span class="WHIT">    </span><span class="NAME">this.orient</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">					</span><span class="COMM">// angulo de rotacion</span><span class="WHIT">
+<span class='line'>447</span> 
+<span class='line'>448</span> </span><span class="WHIT">    </span><span class="COMM">// mass properties</span><span class="WHIT">
+<span class='line'>449</span> </span><span class="WHIT">    </span><span class="NAME">this.density</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>450</span> </span><span class="WHIT">    </span><span class="NAME">this.inertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">					</span><span class="COMM">// momento de inercia</span><span class="WHIT">
+<span class='line'>451</span> </span><span class="WHIT">    </span><span class="NAME">this.inverseInertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">			</span><span class="COMM">// inversa del momento de inercia = 1/inertia</span><span class="WHIT">
+<span class='line'>452</span> </span><span class="WHIT">    </span><span class="NAME">this.mass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">						</span><span class="COMM">// masa</span><span class="WHIT">
+<span class='line'>453</span> </span><span class="WHIT">    </span><span class="NAME">this.inverseMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">				</span><span class="COMM">// inversa de la masa = 1/masa</span><span class="WHIT">
+<span class='line'>454</span> </span><span class="WHIT">    </span><span class="NAME">this.gravity_factor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">            </span><span class="COMM">// como reacciona a la gravedad (x defecto 1)</span><span class="WHIT">
+<span class='line'>455</span> 
+<span class='line'>456</span> </span><span class="WHIT">    </span><span class="COMM">// collission response </span><span class="WHIT">
+<span class='line'>457</span> </span><span class="WHIT">    </span><span class="NAME">this.staticFriction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0.5</span><span class="PUNC">;</span><span class="WHIT">          </span><span class="COMM">// friccion estatica</span><span class="WHIT">
+<span class='line'>458</span> </span><span class="WHIT">    </span><span class="NAME">this.dynamicFriction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0.3</span><span class="PUNC">;</span><span class="WHIT">         </span><span class="COMM">// friccion dinámica</span><span class="WHIT">
+<span class='line'>459</span> </span><span class="WHIT">    </span><span class="NAME">this.restitution</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0.5</span><span class="PUNC">;</span><span class="WHIT">				</span><span class="COMM">// coeficiente de restitucion</span><span class="WHIT">
+<span class='line'>460</span> </span><span class="WHIT">    </span><span class="NAME">this.maxForce</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">                  </span><span class="COMM">// maxima fuerza que resiste</span><span class="WHIT">
+<span class='line'>461</span> </span><span class="WHIT">    </span><span class="NAME">this.maxImpulse</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">                 </span><span class="COMM">// </span><span class="WHIT">
+<span class='line'>462</span> 
+<span class='line'>463</span> 
+<span class='line'>464</span> </span><span class="WHIT">    </span><span class="COMM">// Varios</span><span class="WHIT">
+<span class='line'>465</span> </span><span class="WHIT">    </span><span class="NAME">this.name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"body"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>466</span> </span><span class="WHIT">    </span><span class="NAME">this.color</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'rgba(192,255,192,255)'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>467</span> </span><span class="WHIT">    </span><span class="NAME">this.id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>468</span> </span><span class="WHIT">    </span><span class="NAME">this.deleted</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">               </span><span class="COMM">// marcado para borrar</span><span class="WHIT">
+<span class='line'>469</span> </span><span class="WHIT">    </span><span class="NAME">this.img</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>470</span> </span><span class="WHIT">    </span><span class="NAME">this.visible</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>471</span> </span><span class="WHIT">		</span><span class="WHIT">
+<span class='line'>472</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>473</span> 
+<span class='line'>474</span> 
+<span class='line'>475</span> </span><span class="COMM">//-------------------------------------------------------------------------------</span><span class="WHIT">
+<span class='line'>476</span> </span><span class="COMM">// Interface para la creacion de cuerpos rigidos</span><span class="WHIT">
+<span class='line'>477</span> </span><span class="COMM">//-------------------------------------------------------------------------------</span><span class="WHIT">
+<span class='line'>478</span> </span><span class="COMM">// Facilitan la creacion de cuerpos rigidos tipicos como </span><span class="WHIT">
+<span class='line'>479</span> </span><span class="COMM">// circulos</span><span class="WHIT">
+<span class='line'>480</span> </span><span class="COMM">// triangulos</span><span class="WHIT">
+<span class='line'>481</span> </span><span class="COMM">// cajas</span><span class="WHIT">
+<span class='line'>482</span> </span><span class="COMM">// poligonos </span><span class="WHIT">
+<span class='line'>483</span> 
+<span class='line'>484</span> </span><span class="COMM">/**
+<span class='line'>485</span>  * Interface para la creacion de cuerpos rigidos: Crea un cuerpo a partir de un objeto shape
+<span class='line'>486</span>  * @method Create
+<span class='line'>487</span>  * @param {Shape} p_shape forma geometrica
+<span class='line'>488</span>  * @param {float} p_density densidad
+<span class='line'>489</span> */</span><span class="WHIT">
+<span class='line'>490</span> </span><span class="NAME">Body.prototype.Create</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">p_shape</span><span class="PUNC">,</span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'>491</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>492</span> </span><span class="WHIT">    </span><span class="COMM">// interface con la geometria</span><span class="WHIT">
+<span class='line'>493</span> </span><span class="WHIT">    </span><span class="NAME">this.density</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>494</span> </span><span class="WHIT">    </span><span class="NAME">this.shape</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">p_shape</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>495</span> </span><span class="WHIT">    </span><span class="NAME">p_shape.ComputeMass</span><span class="PUNC">(</span><span class="NAME">p_density</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>496</span> </span><span class="WHIT">    </span><span class="NAME">p_shape.ComputeSize</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>497</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>498</span> 
+<span class='line'>499</span> </span><span class="COMM">/**
+<span class='line'>500</span>  * Interface para la creacion de cuerpos rigidos: Crea un circulo
+<span class='line'>501</span>  * @method CreateCircle
+<span class='line'>502</span>  * @param {float} r radio
+<span class='line'>503</span>  * @param {Vector2} pos posicion
+<span class='line'>504</span>  * @param {float} p_density densidad
+<span class='line'>505</span> */</span><span class="WHIT">
+<span class='line'>506</span> </span><span class="NAME">Body.prototype.CreateCircle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">r</span><span class="PUNC">,</span><span class="NAME">pos</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>507</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>508</span> </span><span class="WHIT">    </span><span class="NAME">this.position</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pos</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>509</span> </span><span class="WHIT">    </span><span class="NAME">this.Create</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">GeoCircle</span><span class="PUNC">(</span><span class="NAME">r</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>510</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>511</span> 
+<span class='line'>512</span> </span><span class="COMM">/**
+<span class='line'>513</span>  * Interface para la creacion de cuerpos rigidos: Crea una caja rectangular
+<span class='line'>514</span>  * @method CreateBox
+<span class='line'>515</span>  * @param {float} w width
+<span class='line'>516</span>  * @param {float} h height
+<span class='line'>517</span>  * @param {Vector2} pos posicion
+<span class='line'>518</span>  * @param {float} p_density densidad
+<span class='line'>519</span> */</span><span class="WHIT">
+<span class='line'>520</span> </span><span class="NAME">Body.prototype.CreateBox</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">w</span><span class="PUNC">,</span><span class="NAME">h</span><span class="PUNC">,</span><span class="NAME">pos</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>521</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>522</span> </span><span class="WHIT">    </span><span class="NAME">this.position</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pos</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>523</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">box_shape</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">GeoPolygon</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>524</span> </span><span class="WHIT">    </span><span class="NAME">box_shape.CreateBox</span><span class="PUNC">(</span><span class="NAME">w</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">h</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>525</span> </span><span class="WHIT">    </span><span class="NAME">this.Create</span><span class="PUNC">(</span><span class="NAME">box_shape</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>526</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>527</span> 
+<span class='line'>528</span> </span><span class="COMM">/**
+<span class='line'>529</span>  * Interface para la creacion de cuerpos rigidos: Crea un triangulo
+<span class='line'>530</span>  * @method CreateTri
+<span class='line'>531</span>  * @param {float} ax coordenada x punto a
+<span class='line'>532</span>  * @param {float} ay coordenada y punto a
+<span class='line'>533</span>  * @param {float} bx coordenada x punto b
+<span class='line'>534</span>  * @param {float} by coordenada y punto b
+<span class='line'>535</span>  * @param {float} cx coordenada x punto c
+<span class='line'>536</span>  * @param {float} cy coordenada y punto c
+<span class='line'>537</span>  * @param {float} p_density densidad
+<span class='line'>538</span> */</span><span class="WHIT">
+<span class='line'>539</span> </span><span class="NAME">Body.prototype.CreateTri</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">ax</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ay</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">bx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">by</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="NAME">cx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cy</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>540</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>541</span> </span><span class="WHIT">    </span><span class="NAME">this.position.Set</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>542</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tri_shape</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">GeoPolygon</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>543</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">p1</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="NAME">ax</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ay</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>544</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">p2</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="NAME">bx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">by</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>545</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">p3</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Vector2</span><span class="PUNC">(</span><span class="NAME">cx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cy</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>546</span> </span><span class="WHIT">    </span><span class="NAME">tri_shape.CreateTri</span><span class="PUNC">(</span><span class="NAME">p1</span><span class="PUNC">,</span><span class="NAME">p2</span><span class="PUNC">,</span><span class="NAME">p3</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>547</span> </span><span class="WHIT">    </span><span class="NAME">this.Create</span><span class="PUNC">(</span><span class="NAME">tri_shape</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>548</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>549</span> 
+<span class='line'>550</span> 
+<span class='line'>551</span> </span><span class="COMM">/**
+<span class='line'>552</span>  * Interface para la creacion de cuerpos rigidos: Crea un poligono convexo a partir de una nube de puntos
+<span class='line'>553</span>  * generando un convex hull.
+<span class='line'>554</span>  * El solver de collisiones solo soporta poligonos convexos, (limitacion del algoritmo SAT)
+<span class='line'>555</span>  * Ademas, por la convencion para computar normales, tiene que estar dibujado en sentido horario.
+<span class='line'>556</span>  * Como los puntos pueden ser una nube de puntos cualquieras, usualmente generado al azar, 
+<span class='line'>557</span>  * para asegurarse que el poligono es convexo, directamente, partimos de la nube de puntos y creamos un convex hull
+<span class='line'>558</span>  * De eso se encarga la funcion CreatePoly
+<span class='line'>559</span>  * @method CreatePoly
+<span class='line'>560</span>  * @param {Vector2[]} pt Array de puntos
+<span class='line'>561</span>  * @param {int} cant_pt cantidad de puntos
+<span class='line'>562</span>  * @param {float} p_density densidad
+<span class='line'>563</span> */</span><span class="WHIT">
+<span class='line'>564</span> 
+<span class='line'>565</span> </span><span class="NAME">Body.prototype.CreatePoly</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">pt</span><span class="PUNC">,</span><span class="NAME">cant_pt</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>566</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>567</span> </span><span class="WHIT">    </span><span class="COMM">// genero un convex hull en sentido horario, a partir de la nube de puntos</span><span class="WHIT">
+<span class='line'>568</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">vertices</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>569</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">vertex_count</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">convexHull</span><span class="PUNC">(</span><span class="NAME">pt</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cant_pt</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">vertices</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>570</span> 
+<span class='line'>571</span> </span><span class="WHIT">    </span><span class="COMM">// creo el shape poligono, ya asegurado que es convexo y en sentido horario</span><span class="WHIT">
+<span class='line'>572</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">poly_shape</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">GeoPolygon</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>573</span> </span><span class="WHIT">    </span><span class="NAME">poly_shape.CreatePoly</span><span class="PUNC">(</span><span class="NAME">vertices</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">vertex_count</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>574</span> </span><span class="WHIT">    </span><span class="NAME">this.Create</span><span class="PUNC">(</span><span class="NAME">poly_shape</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p_density</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>575</span> </span><span class="WHIT">	</span><span class="WHIT">
+<span class='line'>576</span> </span><span class="WHIT">	</span><span class="COMM">// muevo la posicion del poligono a su centro de gravedad</span><span class="WHIT">
+<span class='line'>577</span> </span><span class="WHIT">    </span><span class="NAME">this.position.Set</span><span class="PUNC">(</span><span class="NAME">poly_shape.cm.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">poly_shape.cm.y</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>578</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>579</span> 
+<span class='line'>580</span> 
+<span class='line'>581</span> </span><span class="COMM">//-------------------------------------------------------------------------------</span><span class="WHIT">
+<span class='line'>582</span> </span><span class="COMM">// Dinamica del cuerpo rigido</span><span class="WHIT">
+<span class='line'>583</span> </span><span class="COMM">//-------------------------------------------------------------------------------</span><span class="WHIT">
+<span class='line'>584</span> 
+<span class='line'>585</span> </span><span class="COMM">/**
+<span class='line'>586</span>  * Aplica una fuerza al cuerpo rigido
+<span class='line'>587</span>  * el cuerpo rigido almacena la resulante de todas las fuerzas que actuan sobre el
+<span class='line'>588</span>  * @method ApplyForce
+<span class='line'>589</span>  * @param {Vector2} f fuerza 
+<span class='line'>590</span> */</span><span class="WHIT">
+<span class='line'>591</span> </span><span class="NAME">Body.prototype.ApplyForce</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">f</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>592</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>593</span> </span><span class="WHIT">    </span><span class="NAME">this.force.add</span><span class="PUNC">(</span><span class="NAME">f</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>594</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>595</span> 
+<span class='line'>596</span> </span><span class="COMM">/**
+<span class='line'>597</span> &lt;P> Aplica una impulso al cuerpo rigido&lt;/P> 
+<span class='line'>598</span> &lt;P> Un impulso es una fuerza que produce un cambio instantaneo en la velocidad. 
+<span class='line'>599</span> 	Matematicamente es una fuerza de gran intensidad aplicada durante  un periodo corto de tiempo. &lt;/P> 
+<span class='line'>600</span> 
+<span class='line'>601</span> &lt;P> http:*es.wikipedia.org/wiki/Delta_de_Dirac &lt;/P> 
+<span class='line'>602</span> 
+<span class='line'>603</span> &lt;P> Desde el punto de vista de la dinamica del cuerpo rigido, para nosotros el impulso es un cambio instantaneo en el vector
+<span class='line'>604</span>  de velocidad, (es decir directamente cambiamos la velocidad sin tener que pasar por la aceleracion)
+<span class='line'>605</span>  En la vida real los cambios de velocidad se dan apartir de una aceleracion, producto de aplicar una fuerza, segun
+<span class='line'>606</span>  la segunda ley de movimiento de Newton&lt;/P>
+<span class='line'>607</span>  
+<span class='line'>608</span> &lt;P>  F = ma &lt;/P> 
+<span class='line'>609</span> 
+<span class='line'>610</span> &lt;P>  Sin embargo, el tiempo de aplicacion de la fuerza es menor que el elapsed_time de la simulacion, con lo cual 
+<span class='line'>611</span>  numericamente, es preferible modificar directamente la velocidad.
+<span class='line'>612</span>  El impulso produce un cambio en la velocidad (traslacion) del cuerpo rigido, que es inversamente proporcional a la masa. &lt;/P> 
+<span class='line'>613</span>  
+<span class='line'>614</span> &lt;P> -------------------------------------------------------------&lt;/P> 
+<span class='line'>615</span> &lt;P> ecuacion (1)                 F = ma&lt;/P>
+<span class='line'>616</span> &lt;P> -------------------------------------------------------------&lt;/P> 
+<span class='line'>617</span> 
+<span class='line'>618</span> &lt;P>  Si el impulso se produce en alguna linea de accion que pasa por el centro de masas (CM), solo se produce una movimiento 
+<span class='line'>619</span>  de traslacion. Pero en cualquier otro eje de acción, la fuerza tiene un cierto "momento" 
+<span class='line'>620</span>  El momento de la fuerza con respecto al eje, es el responsable de un cambio en el movimiento de rotacion. &lt;/P> 
+<span class='line'>621</span>  
+<span class='line'>622</span> &lt;P>  http:*es.wikipedia.org/wiki/Momento_de_fuerza&lt;/P> 
+<span class='line'>623</span> 
+<span class='line'>624</span> &lt;P> En  terminos simples el momento de la fuerza es tanto mayor cuanto mas alejado ese del eje que pasa sobre el CM
+<span class='line'>625</span>  Por ejemplo, si queremos abrir una puerta aplicamos una fuerza sobre la manija. Si quisieramos abrir la puerta aplicando
+<span class='line'>626</span>  esa misma fuerza sobre el centro de la fuerza, nos costaria mucho mas.&lt;/P>
+<span class='line'>627</span>  
+<span class='line'>628</span> &lt;P> Por ultimo si quisieramos abrir la puerta aplicando la fuerza sobre la bisagra, no podriamos conseguir abrir la puerta
+<span class='line'>629</span>  La fuerza aplicada sobre el eje que pasa por el CM no tiene momento (el momento es nulo). 
+<span class='line'>630</span> Si el momento de la fuerza es cero, la fuerza no produce rotacion.&lt;/P>
+<span class='line'>631</span> 
+<span class='line'>632</span> &lt;P> Para computar el momento de la fuerza, tambien llamado torque, se usa el producto vectorial del vector posicion del
+<span class='line'>633</span>  punto donde se aplica la fuerza,por el vector fuerza &lt;/P>
+<span class='line'>634</span> 
+<span class='line'>635</span>  &lt;P>  T = r x F        T = torque, r = vector posicion, F = fuerza&lt;/P> 
+<span class='line'>636</span>  
+<span class='line'>637</span> 
+<span class='line'>638</span>  &lt;P> En nuestro caso el punto de aplicacion es contactPoint y el vector fuerza es impuse &lt;/P>
+<span class='line'>639</span> &lt;P>  Torque = cross_vec(contactPoint, impulse)&lt;/P> 
+<span class='line'>640</span> 
+<span class='line'>641</span> &lt;P>  En 2 dimensiones, el producto cruz no es tan "intuitivo" como en 3d dimensiones. Es decir, no hay una forma 
+<span class='line'>642</span>  standard de computar un cross product en 2d. 
+<span class='line'>643</span>  En nuestro caso, lo que se precisa es la magnitud de lo que seria el cross product 3d si la coordenada Z fuerse cero
+<span class='line'>644</span>  Esa magnitud es la que va a producir un cambio en al velocidad de rotacion, o velocidad angular. &lt;/P> 
+<span class='line'>645</span> 
+<span class='line'>646</span> &lt;P>  Ahora bien, no todos los torques producen la misma rotacion en los cuerpos rigidos, dependen de la resistencia que tenga
+<span class='line'>647</span>  el cuerpo rigido de rotar sobre el eje particular. 
+<span class='line'>648</span>  Ese concepto se llama momento de inercia, y es funciona de la misma forma que la masa para la aceleracion lineal.&lt;/P> 
+<span class='line'>649</span> 
+<span class='line'>650</span> &lt;P>  Cuando queremos mover un objeto con mas masa tenemos que aplicar mas fuerza. La masa se puede ver como la resistencia
+<span class='line'>651</span>  que impone el cuerpo al movimiento lineal. Y como siempre esta descripta por la ecuacion de newton F = ma &lt;/P> 
+<span class='line'>652</span> 
+<span class='line'>653</span> &lt;P>  De la misma forma, cuando hablamos de movimientos de rotacion, el analogo a la fuerza es el "momento de la fuerza", o torque
+<span class='line'>654</span>  y el analogo de la masa es el momento de inercia. El momento de inercia = I, depende no solo de la masa, (cuerpos mas masivos
+<span class='line'>655</span>  son mas dificiles de hacer girar que cuerpos mas livianos), si no tambien ademas de la distribuicion de la masa
+<span class='line'>656</span>  con respecto al eje sobre el que se quiere hacer girar. &lt;/P> 
+<span class='line'>657</span>  
+<span class='line'>658</span> &lt;P>  http://es.wikipedia.org/wiki/Momento_de_inercia &lt;/P> 
+<span class='line'>659</span> 
+<span class='line'>660</span> &lt;P> La ecuacion que describe estos 2 conceptos es &lt;/P>
+<span class='line'>661</span> &lt;P>  -------------------------------------------------------------&lt;/P> 
+<span class='line'>662</span> &lt;P> ecuacion (2)&lt;/P>
+<span class='line'>663</span> &lt;P> T = I.dw/dt          T = torque, I = momento de inercia, dw/dt = aceleracion angular&lt;/P>
+<span class='line'>664</span> &lt;P> -------------------------------------------------------------&lt;/P>
+<span class='line'>665</span> &lt;P> http://es.wikipedia.org/wiki/Aceleraci%C3%B3n_angular&lt;/P>
+<span class='line'>666</span> &lt;P> -------------------------------------------------------------&lt;/P>
+<span class='line'>667</span>  * @method ApplyImpulse
+<span class='line'>668</span>  * @param {Vector2} impulse impulso
+<span class='line'>669</span>  * @param {Vector2} contactPoint punto de contacto
+<span class='line'>670</span> */</span><span class="WHIT">
+<span class='line'>671</span> </span><span class="NAME">Body.prototype.ApplyImpulse</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">impulse</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">contactPoint</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>672</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>673</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.inverseMass</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>674</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.mass</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>675</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">     </span><span class="COMM">// es un cuerpo estatico</span><span class="WHIT">
+<span class='line'>676</span> </span><span class="WHIT">            </span><span class="COMM">/*
+<span class='line'>677</span>         else {
+<span class='line'>678</span>             // si inverseMass = 0 pero mass >0 es porque era un cuerpo dinamico, que momentaneamente estaba 
+<span class='line'>679</span>             // en equilibrio ( se comportaba como un cuerpo estatico)
+<span class='line'>680</span>             // eso era valido mientras la unica fuerza que actuaba sobre el cuerpo es la gravedad
+<span class='line'>681</span>             // Si le aplicamos un impulso, es porque hay otra fuerza, se rompio el equilibrio, y se vuelve a comportar como dinamico
+<span class='line'>682</span>             this.inverseMass = 1 / this.mass;
+<span class='line'>683</span>         }*/</span><span class="WHIT">
+<span class='line'>684</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>685</span> 
+<span class='line'>686</span> 
+<span class='line'>687</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">mJ</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">impulse.length</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>688</span> 
+<span class='line'>689</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">mJ</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">this.maxImpulse</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>690</span> </span><span class="WHIT">        </span><span class="NAME">this.maxImpulse</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">mJ</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>691</span> 
+<span class='line'>692</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.inverseMass</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.maxForce</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">mJ</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">this.maxForce</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>693</span> </span><span class="WHIT">    </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>694</span> </span><span class="WHIT">        </span><span class="COMM">// el cuerpo revento, lo saco de la simulacion</span><span class="WHIT">
+<span class='line'>695</span> </span><span class="WHIT">        </span><span class="NAME">this.deleted</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>696</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>697</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>698</span> 
+<span class='line'>699</span> 
+<span class='line'>700</span> </span><span class="WHIT">    </span><span class="COMM">// ecuacion (1)</span><span class="WHIT">
+<span class='line'>701</span> </span><span class="WHIT">    </span><span class="COMM">// F = ma</span><span class="WHIT">
+<span class='line'>702</span> </span><span class="WHIT">    </span><span class="NAME">this.velocity.add</span><span class="PUNC">(</span><span class="NAME">vec2_multiply</span><span class="PUNC">(</span><span class="NAME">impulse</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.inverseMass</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>703</span> 
+<span class='line'>704</span> </span><span class="WHIT">    </span><span class="COMM">// ecuacion (2)</span><span class="WHIT">
+<span class='line'>705</span> </span><span class="WHIT">    </span><span class="COMM">// T = I.dw/dt          T = torque, I = momento de inercia, dw/dt = aceleracion angular</span><span class="WHIT">
+<span class='line'>706</span> </span><span class="WHIT">    </span><span class="NAME">this.angularVelocity</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.inverseInertia</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">cross_vec</span><span class="PUNC">(</span><span class="NAME">contactPoint</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">impulse</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>707</span> 
+<span class='line'>708</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>709</span> 
+<span class='line'>710</span> </span><span class="COMM">/**
+<span class='line'>711</span>  * pone en cero el inverso de la masa indicando que el cuerpo está estático.
+<span class='line'>712</span>  * @method SetStatic
+<span class='line'>713</span> */</span><span class="WHIT">
+<span class='line'>714</span> 
+<span class='line'>715</span> </span><span class="COMM">// al poner en cero el inverso de la masa, se comporta como si el objeto tuviese masa infinita</span><span class="WHIT">
+<span class='line'>716</span> </span><span class="COMM">// o sea que es estatico para los efectos de la simulacion</span><span class="WHIT">
+<span class='line'>717</span> </span><span class="NAME">Body.prototype.SetStatic</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>718</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>719</span> </span><span class="WHIT">    </span><span class="NAME">this.inertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>720</span> </span><span class="WHIT">    </span><span class="NAME">this.inverseInertia</span><span class="WHIT">  </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>721</span> </span><span class="WHIT">    </span><span class="NAME">this.mass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>722</span> </span><span class="WHIT">    </span><span class="NAME">this.inverseMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>723</span> 
+<span class='line'>724</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>725</span> 
+<span class='line'>726</span> 
+<span class='line'>727</span> </span><span class="COMM">/**
+<span class='line'>728</span> &lt;P> lo pone en equilibrio estable, esto quiere decir que mientras no actue ninguna fuerza externa que no sea 
+<span class='line'>729</span>  la gravedad, el cuerpo se comporta como un objeto estatico, es decir con masa infinita
+<span class='line'>730</span>  En la practica lo unico que hacemos es poner el inverso de la masa en cero, para que no acelere mas
+<span class='line'>731</span>  Sin embargo a diferfencia de los objetos estaticos, la masa del cuerpo sigue siendo positiva (y no cero = infinito)
+<span class='line'>732</span>  de esta forma, se distingue entre un objeto estatico pp dicho, de otro que esta en equilibrio estable por el momento.&lt;/P>
+<span class='line'>733</span>  * @method SetStaticEquilibrium
+<span class='line'>734</span> */</span><span class="WHIT">
+<span class='line'>735</span> </span><span class="NAME">Body.prototype.SetStaticEquilibrium</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>736</span> </span><span class="WHIT">    </span><span class="NAME">this.inverseMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>737</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>738</span> 
+<span class='line'>739</span> 
+<span class='line'>740</span> </span><span class="COMM">/**
+<span class='line'>741</span>  * Para el caso 2d la orientacion es un ángulo, representa el angulo de giro sobre el eje Z que pasa por el CM
+<span class='line'>742</span>  * @method SetOrient
+<span class='line'>743</span>  * @param {float} angle angulo de giro en radianes
+<span class='line'>744</span> */</span><span class="WHIT">
+<span class='line'>745</span> </span><span class="NAME">Body.prototype.SetOrient</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>746</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>747</span> </span><span class="WHIT">    </span><span class="NAME">this.orient</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>748</span> </span><span class="WHIT">    </span><span class="NAME">this.shape.SetOrient</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>749</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>750</span> 
+<span class='line'>751</span> 
+<span class='line'>752</span> 
+<span class='line'>753</span> </span><span class="COMM">/**
+<span class='line'>754</span>  &lt;P> independientemente que las clases geometrias (circulos y poligonos) puedan computar la masa y el momento de inercia
+<span class='line'>755</span> 	a partir de la definicion usando conceptos geometricos. Muchas veces en el contexto de una simulacion, el cuerpo rigido
+<span class='line'>756</span> 	es una simplificacion de un cuerpo mas complicado, y es preferible "tunear" a mano los valores de masa e inercia como 
+<span class='line'>757</span> 	si fueran un parametro de diseño&lt;/P>
+<span class='line'>758</span>  * @method SetMass
+<span class='line'>759</span>  * @param {float} m masa
+<span class='line'>760</span> */</span><span class="WHIT">
+<span class='line'>761</span> </span><span class="NAME">Body.prototype.SetMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">m</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>762</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>763</span> </span><span class="WHIT">    </span><span class="NAME">this.mass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">m</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>764</span> </span><span class="WHIT">    </span><span class="NAME">this.inverseMass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">m</span><span class="PUNC">!=</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">/</span><span class="NAME">m</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>765</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>766</span> 
+<span class='line'>767</span> </span><span class="COMM">/**
+<span class='line'>768</span>  * @method SetInertia
+<span class='line'>769</span>  * @param {float} I intercia
+<span class='line'>770</span> */</span><span class="WHIT">
+<span class='line'>771</span> </span><span class="NAME">Body.prototype.SetInertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">I</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>772</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>773</span> </span><span class="WHIT">    </span><span class="NAME">this.inertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">I</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>774</span> </span><span class="WHIT">    </span><span class="NAME">this.inverseInertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">I</span><span class="PUNC">!=</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">this.inverseInertia</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">/</span><span class="NAME">I</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>775</span> 
+<span class='line'>776</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>777</span> 
+<span class='line'>778</span> </span><span class="COMM">/**
+<span class='line'>779</span> &lt;P> Ecuaciones de newton que tenemos que integrar para computar la posicion del cuerpo rigido&lt;/P>
+<span class='line'>780</span> &lt;P>  Acceleration&lt;/P>
+<span class='line'>781</span> &lt;P>     F = mA&lt;/P>
+<span class='line'>782</span> &lt;P>  => A = F * 1/m&lt;/P>
+<span class='line'>783</span> &lt;P>  Explicit Euler&lt;/P>
+<span class='line'>784</span> &lt;P>  x += v * dt&lt;/P>
+<span class='line'>785</span> &lt;P>  v += (1/m * F) * dt&lt;/P>
+<span class='line'>786</span> &lt;P>  Symplectic Euler&lt;/P>
+<span class='line'>787</span> &lt;P>  v += (1/m * F) * dt&lt;/P>
+<span class='line'>788</span> &lt;P>  x += v * dt&lt;/P>
+<span class='line'>789</span> &lt;P>  Para integrar conviene hacerlo en 2 etapas, avanzando el tiempo por la mitad. La explicacion se puede encontrar aca&lt;/P>
+<span class='line'>790</span> &lt;P>  http://www.niksula.hut.fi/~hkankaan/Homepages/gravity.html&lt;/P>
+<span class='line'>791</span> &lt;P>  se supone que dt = elapsed_time / 2&lt;/P>
+<span class='line'>792</span>  * @method IntegrateForces
+<span class='line'>793</span>  * @param {float} dt elapsed time / 2
+<span class='line'>794</span> */</span><span class="WHIT">
+<span class='line'>795</span> </span><span class="NAME">Body.prototype.IntegrateForces</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">dt</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>796</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>797</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">this.inverseMass</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>798</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>799</span> 
+<span class='line'>800</span> </span><span class="WHIT">    </span><span class="COMM">//	velocity += (force * inverseMass + gravity*gravity_factor) * dt;</span><span class="WHIT">
+<span class='line'>801</span> 
+<span class='line'>802</span> </span><span class="WHIT">    </span><span class="COMM">// aceleracion que producen las fuerzas externas</span><span class="WHIT">
+<span class='line'>803</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">acel</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_multiply</span><span class="PUNC">(</span><span class="NAME">this.force</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.inverseMass</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>804</span> </span><span class="WHIT">    </span><span class="COMM">// aceleracion de la gravedad</span><span class="WHIT">
+<span class='line'>805</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">acel_grav</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_multiply</span><span class="PUNC">(</span><span class="NAME">gravity</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.gravity_factor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>806</span> </span><span class="WHIT">    </span><span class="COMM">// aceleracion neta</span><span class="WHIT">
+<span class='line'>807</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">acel_neta</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">vec2_add</span><span class="PUNC">(</span><span class="NAME">acel</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">acel_grav</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>808</span> </span><span class="WHIT">    </span><span class="COMM">// integro la aceleracion lineal</span><span class="WHIT">
+<span class='line'>809</span> </span><span class="WHIT">    </span><span class="NAME">this.velocity.add</span><span class="PUNC">(</span><span class="NAME">vec2_multiply</span><span class="PUNC">(</span><span class="NAME">acel_neta</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">dt</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>810</span> </span><span class="WHIT">    </span><span class="COMM">// integro la aceleracion angular</span><span class="WHIT">
+<span class='line'>811</span> </span><span class="WHIT">    </span><span class="NAME">this.angularVelocity</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.torque</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">this.inverseInertia</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">dt</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>812</span> 
+<span class='line'>813</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>814</span> 
+<span class='line'>815</span> 
+<span class='line'>816</span> </span><span class="COMM">/**
+<span class='line'>817</span>  * @method IntegrateVelocity
+<span class='line'>818</span>  * @param {float} dt elapsed time / 2
+<span class='line'>819</span> */</span><span class="WHIT">
+<span class='line'>820</span> </span><span class="NAME">Body.prototype.IntegrateVelocity</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">dt</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>821</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>822</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">this.inverseMass</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>823</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>824</span> 
+<span class='line'>825</span> </span><span class="WHIT">    </span><span class="NAME">this.position.add</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">vec2_multiply</span><span class="PUNC">(</span><span class="NAME">this.velocity</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT">  </span><span class="NAME">dt</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>826</span> </span><span class="WHIT">    </span><span class="NAME">this.orient</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.angularVelocity</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">dt</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>827</span> </span><span class="WHIT">    </span><span class="NAME">this.orient</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fmod</span><span class="PUNC">(</span><span class="NAME">this.orient</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">2.0</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">Math.PI</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>828</span> </span><span class="WHIT">    </span><span class="NAME">this.SetOrient</span><span class="PUNC">(</span><span class="NAME">this.orient</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>829</span> 
+<span class='line'>830</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>831</span> 
+<span class='line'>832</span> </span><span class="COMM">/**
+<span class='line'>833</span>  * @method Render
+<span class='line'>834</span> */</span><span class="WHIT">
+<span class='line'>835</span> </span><span class="NAME">Body.prototype.Render</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>836</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>837</span> 
+<span class='line'>838</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.visible</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>839</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>840</span> 
+<span class='line'>841</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.img</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>842</span> </span><span class="WHIT">        </span><span class="COMM">// tiene una imagen asociada, dibuja atraves de la imagen</span><span class="WHIT">
+<span class='line'>843</span> 
+<span class='line'>844</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.position.x</span><span class="PUNC">*</span><span class="NAME">ex</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>845</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.position.y</span><span class="PUNC">*</span><span class="NAME">ey</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>846</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">width</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.width</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ex</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>847</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">height</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.height</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ey</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>848</span> 
+<span class='line'>849</span> </span><span class="WHIT">        </span><span class="NAME">ctx.translate</span><span class="PUNC">(</span><span class="NAME">x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>850</span> </span><span class="WHIT">        </span><span class="NAME">ctx.rotate</span><span class="PUNC">(</span><span class="NAME">this.orient</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>851</span> </span><span class="WHIT">        </span><span class="NAME">ctx.drawImage</span><span class="PUNC">(</span><span class="NAME">this.img</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">width</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">height</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">width</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">height</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>852</span> </span><span class="WHIT">        </span><span class="NAME">ctx.rotate</span><span class="PUNC">(</span><span class="PUNC">-</span><span class="NAME">this.orient</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>853</span> </span><span class="WHIT">        </span><span class="NAME">ctx.translate</span><span class="PUNC">(</span><span class="PUNC">-</span><span class="NAME">x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">y</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>854</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>855</span> </span><span class="WHIT">    </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>856</span> </span><span class="WHIT">        </span><span class="COMM">// dibujo a traves de la interface de geometria asociada al cuerpo</span><span class="WHIT">
+<span class='line'>857</span> </span><span class="WHIT">        </span><span class="NAME">this.shape.Render</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>858</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>859</span> 
+<span class='line'>860</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>861</span> 
+<span class='line'>862</span> </span><span class="COMM">/**
+<span class='line'>863</span>  * helper, dibuja un centro de gravedad en la posicion dada
+<span class='line'>864</span>  * @method drawCenterOfMass
+<span class='line'>865</span>  * @param {float} x posicion x
+<span class='line'>866</span>  * @param {float} y posicion y
+<span class='line'>867</span>  * @param {float} r radio
+<span class='line'>868</span>  * @param {float} alfa angulo en radianes
+<span class='line'>869</span> */</span><span class="WHIT">
+<span class='line'>870</span> </span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">drawCenterOfMass</span><span class="PUNC">(</span><span class="NAME">x</span><span class="PUNC">,</span><span class="NAME">y</span><span class="PUNC">,</span><span class="NAME">r</span><span class="PUNC">,</span><span class="NAME">alfa</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'>871</span> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>872</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">da</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.PI</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>873</span> 
+<span class='line'>874</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">4</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>875</span> </span><span class="WHIT">    </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>876</span> </span><span class="WHIT">        </span><span class="NAME">ctx.fillStyle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">%</span><span class="NUMB">2</span><span class="PUNC">)</span><span class="PUNC">==</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="STRN">'#ffffff'</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'#000000'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>877</span> </span><span class="WHIT">        </span><span class="NAME">ctx.beginPath</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>878</span> </span><span class="WHIT">        </span><span class="NAME">ctx.moveTo</span><span class="PUNC">(</span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ey</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>879</span> </span><span class="WHIT">        </span><span class="NAME">ctx.lineTo</span><span class="PUNC">(</span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">r</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">Math.cos</span><span class="PUNC">(</span><span class="NAME">alfa</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">r</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">Math.sin</span><span class="PUNC">(</span><span class="NAME">alfa</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ey</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>880</span> </span><span class="WHIT">        </span><span class="NAME">ctx.arc</span><span class="PUNC">(</span><span class="NAME">ox</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">oy</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ey</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">r</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">ex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">alfa</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">alfa</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">da</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>881</span> </span><span class="WHIT">        </span><span class="NAME">ctx.closePath</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>882</span> </span><span class="WHIT">        </span><span class="NAME">ctx.fill</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>883</span> </span><span class="WHIT">        </span><span class="NAME">alfa</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">da</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>884</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>885</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>886</span> </span></pre></body></html>

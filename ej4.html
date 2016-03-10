@@ -1,0 +1,206 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+
+<script type="text/javascript" src="engine/math.js"></script>
+<script type="text/javascript" src="engine/body.js"></script>
+<script type="text/javascript" src="engine/world.js"></script>
+<script type="text/javascript" src="engine/collision.js"></script>
+<script type="text/javascript" src="engine/contact.js"></script>
+<script type="text/javascript" src="engine/constraint.js"></script>
+<script type="text/javascript" src="engine/ragdall.js"></script>
+
+<script type="text/javascript">
+
+var elapsed_time = 1/60;
+var canvas;
+var ctx;
+var	ex = 10;
+var ey = 10;
+var ox = 20;
+var oy = 20;
+
+// posicion del mouse
+var mouse_x = 0;
+var mouse_y = 0;
+
+var gravityScale = 5.0;
+var gravity = new Vector2( 0, 10 * gravityScale );
+var fixed_dt = 1.0/60.0;								// avance del tiempo constante
+var _world = new World();
+
+var pos_pinza_x = 30;
+var pos_pinza_y = 50;
+var pinza_dx = 15;
+var pinza_dy = 2;
+var pinza = null;
+
+var init = false;
+var pinza_event = 0;
+
+function Update() 
+{
+	if(pinza!=null && pinza_event!=0)
+	{
+		pinza.orient += pinza.angularVelocity * elapsed_time;
+		pinza.SetOrient(pinza.orient);
+		
+		switch(pinza_event)
+		{
+			case 1:
+				if(pinza.orient<-1)
+				{
+					pinza_event = 2;
+					pinza.angularVelocity *= -1;
+				}
+				break;
+			case 2:
+				if(pinza.orient>0)
+				{
+					pinza_event = 0;
+					pinza.angularVelocity = 0;
+					pinza.orient = 0;
+					pinza.SetOrient(0);
+				}
+				break;
+		}
+	}
+		
+    _world.Update(elapsed_time);
+	
+}
+
+function Render() 
+{
+    if (canvas.getContext)
+    {
+        // borro la pantalla
+        ctx.fillStyle = 'rgba(0,0,0,255)';
+        ctx.fillRect(0,0,2000,2000);
+		// dibujo la escena esquematica con el motor 
+	    _world.Render(ctx,ox,oy,ex,ey);
+    }
+}
+
+
+function RenderLoop() 
+{
+    if (!init)
+		return;
+    
+	Update();
+	Render();
+}
+
+
+function doKeyDown(e) 
+{
+	var xPos = (mouse_x-ox)/ ex; 
+	var yPos = (mouse_y-oy)/ ey; 
+}
+
+function onMouseMove() 
+{
+	var xPos = window.event.offsetX;
+	var yPos = window.event.offsetY;
+
+    // actualizo la posicion del mouse
+	mouse_x = xPos;
+	mouse_y = yPos;
+}
+
+function onMouseDown(e) {
+    e = e || window.event;
+    switch (e.which)
+    {
+        case 1:
+            // Left button
+            break;
+        case 2:
+            // middle button
+            break;
+        case 3:
+            // right button
+            break;
+    }
+}
+
+
+function onMouseUp(e) {
+    e = e || window.event;
+    switch (e.which) {
+        case 1:
+            // Left button
+			pinza.angularVelocity = -6;
+			pinza_event = 1;
+            break;
+        case 2:
+            // middle button
+            break;
+        case 3:
+            // right button
+            break;
+    }
+}
+
+function loadscene()
+{
+    var p = _world.AddTri(0, 40, 0, 30 , 20,40);
+	p.position = new Vector2(12,60);
+    p.SetStatic();
+	
+    p = _world.AddBox(60, 60, 40, 5);
+    p.SetStatic();
+	
+    p = _world.AddBox(40, 0, 80, 5);
+    p.SetStatic();
+    p = _world.AddBox(2.5, 30, 5, 55);
+    p.SetStatic();
+    p = _world.AddBox(80-2.5, 30, 5, 55);
+    p.SetStatic();
+
+	// Creo un circulo
+	for(var i=0;i<10;++i)
+	{
+		p = _world.AddCircle(Math.random()*60,5+Math.random()*20,2);
+		var angle = Math.random()*Math.PI/2;
+		var vel = 100;
+		p.velocity = new Vector2(Math.cos(angle)*vel , Math.sin(angle)*vel);
+		p.restitution = 1;
+	}
+	
+	pinza = _world.AddBox(pos_pinza_x,pos_pinza_y,pinza_dx,pinza_dy);
+	pinza.SetStatic();
+	pinza.shape.SetCenterOfMass(new Vector2(-5,0));
+	
+
+	// anulo la gravedad
+	 gravity.y = 0;
+	
+    init = true;
+
+}
+
+function main()
+{   
+	document.addEventListener( "keydown", doKeyDown, true);
+	document.addEventListener("mousemove", onMouseMove, true);
+	document.addEventListener("mousedown", onMouseDown, true);
+	document.addEventListener("mouseup", onMouseUp, true);
+
+    canvas = document.getElementById('mycanvas');
+    ctx = canvas.getContext('2d');
+	
+	loadscene();
+	
+    setInterval(RenderLoop, elapsed_time * 1000);
+} 
+
+
+</script>
+</head>
+<body onload="main();">
+	<canvas id="mycanvas" width="1000" height="700"></canvas>
+</body>
+</html>
+ 

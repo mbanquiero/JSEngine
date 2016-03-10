@@ -1,0 +1,1997 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - Body</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/Body.html">Body</a></li>
+	
+	<li><a href="../symbols/Constraint.html">Constraint</a></li>
+	
+	<li><a href="../symbols/ContactSolver.html">ContactSolver</a></li>
+	
+	<li><a href="../symbols/GeoCircle.html">GeoCircle</a></li>
+	
+	<li><a href="../symbols/GeoPolygon.html">GeoPolygon</a></li>
+	
+	<li><a href="../symbols/Matrix2.html">Matrix2</a></li>
+	
+	<li><a href="../symbols/Vector2.html">Vector2</a></li>
+	
+	<li><a href="../symbols/World.html">World</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Class Body
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				BodyObjeto rigid body. La escena esta compuesta de un cierto número de rigid body que interactuan entre si.
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/C__uade_JSEngine_engine_body.js.html">body.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Body.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/Body.html#constructor">Body</a></b>()
+							</div>
+							<div class="description"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Body.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#angularVelocity">angularVelocity</a></b>
+								</div>
+								<div class="description">Velocidad angular</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#color">color</a></b>
+								</div>
+								<div class="description">color del objeto</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#deleted">deleted</a></b>
+								</div>
+								<div class="description">flag que indica que el objeto esta borrado</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#density">density</a></b>
+								</div>
+								<div class="description">Densidad</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#dynamicFriction">dynamicFriction</a></b>
+								</div>
+								<div class="description">Coeficiente de friccion dinamica</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#force">force</a></b>
+								</div>
+								<div class="description">Fuerza resultante</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#gravity_factor">gravity_factor</a></b>
+								</div>
+								<div class="description">factor que multiplica la fuerza de gravedad</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#height">height</a></b>
+								</div>
+								<div class="description">Alto del bounding rect</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#id">id</a></b>
+								</div>
+								<div class="description">id numérico</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#img">img</a></b>
+								</div>
+								<div class="description">Objeto imagen asociado</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#inertia">inertia</a></b>
+								</div>
+								<div class="description">Momento de inercia</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#inverseInertia">inverseInertia</a></b>
+								</div>
+								<div class="description">1/inertia</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#inverseMass">inverseMass</a></b>
+								</div>
+								<div class="description">1/masa</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#mass">mass</a></b>
+								</div>
+								<div class="description">masa</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#maxForce">maxForce</a></b>
+								</div>
+								<div class="description">maxima fuerza que resiste (resistencia del material)</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#name">name</a></b>
+								</div>
+								<div class="description">nombre del objeto</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#orient">orient</a></b>
+								</div>
+								<div class="description">Angulo de orientacion</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#position">position</a></b>
+								</div>
+								<div class="description">Posicion</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#restitution">restitution</a></b>
+								</div>
+								<div class="description">Coeficiente de restitucion</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#shape">shape</a></b>
+								</div>
+								<div class="description">Forma del objeto</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#staticFriction">staticFriction</a></b>
+								</div>
+								<div class="description">Coeficiente de friccion estatica</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#torque">torque</a></b>
+								</div>
+								<div class="description">Tensor de inercia</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#velocity">velocity</a></b>
+								</div>
+								<div class="description">Velocidad (lineal)</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#visible">visible</a></b>
+								</div>
+								<div class="description">flag que indica que si objeto es visible</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Body.html#width">width</a></b>
+								</div>
+								<div class="description">Ancho del bounding rect</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class Body.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#ApplyForce">ApplyForce</a></b>(f)
+								</div>
+								<div class="description">Aplica una fuerza al cuerpo rigidoel cuerpo rigido almacena la resulante de todas las fuerzas que actuan sobre el</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#ApplyImpulse">ApplyImpulse</a></b>(impulse, contactPoint)
+								</div>
+								<div class="description"><P> Aplica una impulso al cuerpo rigido</P> 
+<P> Un impulso es una fuerza que produce un cambio instantaneo en la velocidad.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#Create">Create</a></b>(p_shape, p_density)
+								</div>
+								<div class="description">Interface para la creacion de cuerpos rigidos: Crea un cuerpo a partir de un objeto shape</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#CreateBox">CreateBox</a></b>(w, h, pos, p_density)
+								</div>
+								<div class="description">Interface para la creacion de cuerpos rigidos: Crea una caja rectangular</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#CreateCircle">CreateCircle</a></b>(r, pos, p_density)
+								</div>
+								<div class="description">Interface para la creacion de cuerpos rigidos: Crea un circulo</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#CreatePoly">CreatePoly</a></b>(pt, cant_pt, p_density)
+								</div>
+								<div class="description">Interface para la creacion de cuerpos rigidos: Crea un poligono convexo a partir de una nube de puntosgenerando un convex hull.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#CreateTri">CreateTri</a></b>(ax, ay, bx, by, cx, cy, p_density)
+								</div>
+								<div class="description">Interface para la creacion de cuerpos rigidos: Crea un triangulo</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#IntegrateForces">IntegrateForces</a></b>(dt)
+								</div>
+								<div class="description"><P> Ecuaciones de newton que tenemos que integrar para computar la posicion del cuerpo rigido</P>
+<P>  Acceleration</P>
+<P>     F = mA</P>
+<P>  => A = F * 1/m</P>
+<P>  Explicit Euler</P>
+<P>  x += v * dt</P>
+<P>  v += (1/m * F) * dt</P>
+<P>  Symplectic Euler</P>
+<P>  v += (1/m * F) * dt</P>
+<P>  x += v * dt</P>
+<P>  Para integrar conviene hacerlo en 2 etapas, avanzando el tiempo por la mitad.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#IntegrateVelocity">IntegrateVelocity</a></b>(dt)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#Render">Render</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#SetInertia">SetInertia</a></b>(I)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#SetMass">SetMass</a></b>(m)
+								</div>
+								<div class="description"><P> independientemente que las clases geometrias (circulos y poligonos) puedan computar la masa y el momento de inercia
+	a partir de la definicion usando conceptos geometricos.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#SetOrient">SetOrient</a></b>(angle)
+								</div>
+								<div class="description">Para el caso 2d la orientacion es un ángulo, representa el angulo de giro sobre el eje Z que pasa por el CM</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#SetStatic">SetStatic</a></b>()
+								</div>
+								<div class="description">pone en cero el inverso de la masa indicando que el cuerpo está estático.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Body.html#SetStaticEquilibrium">SetStaticEquilibrium</a></b>()
+								</div>
+								<div class="description"><P> lo pone en equilibrio estable, esto quiere decir que mientras no actue ninguna fuerza externa que no sea 
+ la gravedad, el cuerpo se comporta como un objeto estatico, es decir con masa infinita
+ En la practica lo unico que hacemos es poner el inverso de la masa en cero, para que no acelere mas
+ Sin embargo a diferfencia de los objetos estaticos, la masa del cuerpo sigue siendo positiva (y no cero = infinito)
+ de esta forma, se distingue entre un objeto estatico pp dicho, de otro que esta en equilibrio estable por el momento.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>Body</b>()
+				</div>
+				
+				<div class="description">
+					
+					
+				</div>
+				
+				
+				
+				
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="angularVelocity"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>angularVelocity</b>
+					
+					</div>
+					<div class="description">
+						Velocidad angular
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="color"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string}</span>
+					<b>color</b>
+					
+					</div>
+					<div class="description">
+						color del objeto
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="deleted"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{boolean}</span>
+					<b>deleted</b>
+					
+					</div>
+					<div class="description">
+						flag que indica que el objeto esta borrado
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="density"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>density</b>
+					
+					</div>
+					<div class="description">
+						Densidad
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="dynamicFriction"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>dynamicFriction</b>
+					
+					</div>
+					<div class="description">
+						Coeficiente de friccion dinamica
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="force"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/Vector2.html">Vector2</a>}</span>
+					<b>force</b>
+					
+					</div>
+					<div class="description">
+						Fuerza resultante
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="gravity_factor"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>gravity_factor</b>
+					
+					</div>
+					<div class="description">
+						factor que multiplica la fuerza de gravedad
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="height"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>height</b>
+					
+					</div>
+					<div class="description">
+						Alto del bounding rect
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="id"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{int}</span>
+					<b>id</b>
+					
+					</div>
+					<div class="description">
+						id numérico
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="img"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Image}</span>
+					<b>img</b>
+					
+					</div>
+					<div class="description">
+						Objeto imagen asociado
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="inertia"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>inertia</b>
+					
+					</div>
+					<div class="description">
+						Momento de inercia
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="inverseInertia"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>inverseInertia</b>
+					
+					</div>
+					<div class="description">
+						1/inertia
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="inverseMass"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>inverseMass</b>
+					
+					</div>
+					<div class="description">
+						1/masa
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mass"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>mass</b>
+					
+					</div>
+					<div class="description">
+						masa
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="maxForce"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>maxForce</b>
+					
+					</div>
+					<div class="description">
+						maxima fuerza que resiste (resistencia del material)
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="name"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string}</span>
+					<b>name</b>
+					
+					</div>
+					<div class="description">
+						nombre del objeto
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="orient"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>orient</b>
+					
+					</div>
+					<div class="description">
+						Angulo de orientacion
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="position"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/Vector2.html">Vector2</a>}</span>
+					<b>position</b>
+					
+					</div>
+					<div class="description">
+						Posicion
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="restitution"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>restitution</b>
+					
+					</div>
+					<div class="description">
+						Coeficiente de restitucion
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="shape"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Object}</span>
+					<b>shape</b>
+					
+					</div>
+					<div class="description">
+						Forma del objeto
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="staticFriction"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>staticFriction</b>
+					
+					</div>
+					<div class="description">
+						Coeficiente de friccion estatica
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="torque"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>torque</b>
+					
+					</div>
+					<div class="description">
+						Tensor de inercia
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="velocity"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/Vector2.html">Vector2</a>}</span>
+					<b>velocity</b>
+					
+					</div>
+					<div class="description">
+						Velocidad (lineal)
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="visible"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{boolean}</span>
+					<b>visible</b>
+					
+					</div>
+					<div class="description">
+						flag que indica que si objeto es visible
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="width"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{float}</span>
+					<b>width</b>
+					
+					</div>
+					<div class="description">
+						Ancho del bounding rect
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="ApplyForce"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>ApplyForce</b>(f)
+					
+					</div>
+					<div class="description">
+						Aplica una fuerza al cuerpo rigidoel cuerpo rigido almacena la resulante de todas las fuerzas que actuan sobre el
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Vector2.html">Vector2</a>}</span> <b>f</b>
+									
+								</dt>
+								<dd>fuerza</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="ApplyImpulse"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>ApplyImpulse</b>(impulse, contactPoint)
+					
+					</div>
+					<div class="description">
+						<P> Aplica una impulso al cuerpo rigido</P> 
+<P> Un impulso es una fuerza que produce un cambio instantaneo en la velocidad. 
+	Matematicamente es una fuerza de gran intensidad aplicada durante  un periodo corto de tiempo. </P> 
+
+<P> http:*es.wikipedia.org/wiki/Delta_de_Dirac </P> 
+
+<P> Desde el punto de vista de la dinamica del cuerpo rigido, para nosotros el impulso es un cambio instantaneo en el vector
+ de velocidad, (es decir directamente cambiamos la velocidad sin tener que pasar por la aceleracion)
+ En la vida real los cambios de velocidad se dan apartir de una aceleracion, producto de aplicar una fuerza, segun
+ la segunda ley de movimiento de Newton</P>
+ 
+<P>  F = ma </P> 
+
+<P>  Sin embargo, el tiempo de aplicacion de la fuerza es menor que el elapsed_time de la simulacion, con lo cual 
+ numericamente, es preferible modificar directamente la velocidad.
+ El impulso produce un cambio en la velocidad (traslacion) del cuerpo rigido, que es inversamente proporcional a la masa. </P> 
+ 
+<P> -------------------------------------------------------------</P> 
+<P> ecuacion (1)                 F = ma</P>
+<P> -------------------------------------------------------------</P> 
+
+<P>  Si el impulso se produce en alguna linea de accion que pasa por el centro de masas (CM), solo se produce una movimiento 
+ de traslacion. Pero en cualquier otro eje de acción, la fuerza tiene un cierto "momento" 
+ El momento de la fuerza con respecto al eje, es el responsable de un cambio en el movimiento de rotacion. </P> 
+ 
+<P>  http:*es.wikipedia.org/wiki/Momento_de_fuerza</P> 
+
+<P> En  terminos simples el momento de la fuerza es tanto mayor cuanto mas alejado ese del eje que pasa sobre el CM
+ Por ejemplo, si queremos abrir una puerta aplicamos una fuerza sobre la manija. Si quisieramos abrir la puerta aplicando
+ esa misma fuerza sobre el centro de la fuerza, nos costaria mucho mas.</P>
+ 
+<P> Por ultimo si quisieramos abrir la puerta aplicando la fuerza sobre la bisagra, no podriamos conseguir abrir la puerta
+ La fuerza aplicada sobre el eje que pasa por el CM no tiene momento (el momento es nulo). 
+Si el momento de la fuerza es cero, la fuerza no produce rotacion.</P>
+
+<P> Para computar el momento de la fuerza, tambien llamado torque, se usa el producto vectorial del vector posicion del
+ punto donde se aplica la fuerza,por el vector fuerza </P>
+
+ <P>  T = r x F        T = torque, r = vector posicion, F = fuerza</P> 
+ 
+
+ <P> En nuestro caso el punto de aplicacion es contactPoint y el vector fuerza es impuse </P>
+<P>  Torque = cross_vec(contactPoint, impulse)</P> 
+
+<P>  En 2 dimensiones, el producto cruz no es tan "intuitivo" como en 3d dimensiones. Es decir, no hay una forma 
+ standard de computar un cross product en 2d. 
+ En nuestro caso, lo que se precisa es la magnitud de lo que seria el cross product 3d si la coordenada Z fuerse cero
+ Esa magnitud es la que va a producir un cambio en al velocidad de rotacion, o velocidad angular. </P> 
+
+<P>  Ahora bien, no todos los torques producen la misma rotacion en los cuerpos rigidos, dependen de la resistencia que tenga
+ el cuerpo rigido de rotar sobre el eje particular. 
+ Ese concepto se llama momento de inercia, y es funciona de la misma forma que la masa para la aceleracion lineal.</P> 
+
+<P>  Cuando queremos mover un objeto con mas masa tenemos que aplicar mas fuerza. La masa se puede ver como la resistencia
+ que impone el cuerpo al movimiento lineal. Y como siempre esta descripta por la ecuacion de newton F = ma </P> 
+
+<P>  De la misma forma, cuando hablamos de movimientos de rotacion, el analogo a la fuerza es el "momento de la fuerza", o torque
+ y el analogo de la masa es el momento de inercia. El momento de inercia = I, depende no solo de la masa, (cuerpos mas masivos
+ son mas dificiles de hacer girar que cuerpos mas livianos), si no tambien ademas de la distribuicion de la masa
+ con respecto al eje sobre el que se quiere hacer girar. </P> 
+ 
+<P>  http://es.wikipedia.org/wiki/Momento_de_inercia </P> 
+
+<P> La ecuacion que describe estos 2 conceptos es </P>
+<P>  -------------------------------------------------------------</P> 
+<P> ecuacion (2)</P>
+<P> T = I.dw/dt          T = torque, I = momento de inercia, dw/dt = aceleracion angular</P>
+<P> -------------------------------------------------------------</P>
+<P> http://es.wikipedia.org/wiki/Aceleraci%C3%B3n_angular</P>
+<P> -------------------------------------------------------------</P>
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Vector2.html">Vector2</a>}</span> <b>impulse</b>
+									
+								</dt>
+								<dd>impulso</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Vector2.html">Vector2</a>}</span> <b>contactPoint</b>
+									
+								</dt>
+								<dd>punto de contacto</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="Create"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>Create</b>(p_shape, p_density)
+					
+					</div>
+					<div class="description">
+						Interface para la creacion de cuerpos rigidos: Crea un cuerpo a partir de un objeto shape
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Shape}</span> <b>p_shape</b>
+									
+								</dt>
+								<dd>forma geometrica</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>p_density</b>
+									
+								</dt>
+								<dd>densidad</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="CreateBox"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>CreateBox</b>(w, h, pos, p_density)
+					
+					</div>
+					<div class="description">
+						Interface para la creacion de cuerpos rigidos: Crea una caja rectangular
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>w</b>
+									
+								</dt>
+								<dd>width</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>h</b>
+									
+								</dt>
+								<dd>height</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Vector2.html">Vector2</a>}</span> <b>pos</b>
+									
+								</dt>
+								<dd>posicion</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>p_density</b>
+									
+								</dt>
+								<dd>densidad</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="CreateCircle"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>CreateCircle</b>(r, pos, p_density)
+					
+					</div>
+					<div class="description">
+						Interface para la creacion de cuerpos rigidos: Crea un circulo
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>r</b>
+									
+								</dt>
+								<dd>radio</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Vector2.html">Vector2</a>}</span> <b>pos</b>
+									
+								</dt>
+								<dd>posicion</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>p_density</b>
+									
+								</dt>
+								<dd>densidad</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="CreatePoly"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>CreatePoly</b>(pt, cant_pt, p_density)
+					
+					</div>
+					<div class="description">
+						Interface para la creacion de cuerpos rigidos: Crea un poligono convexo a partir de una nube de puntosgenerando un convex hull.El solver de collisiones solo soporta poligonos convexos, (limitacion del algoritmo SAT)Ademas, por la convencion para computar normales, tiene que estar dibujado en sentido horario.Como los puntos pueden ser una nube de puntos cualquieras, usualmente generado al azar, para asegurarse que el poligono es convexo, directamente, partimos de la nube de puntos y creamos un convex hullDe eso se encarga la funcion CreatePoly
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Vector2.html">Vector2</a>[]}</span> <b>pt</b>
+									
+								</dt>
+								<dd>Array de puntos</dd>
+							
+								<dt>
+									<span class="light fixedFont">{int}</span> <b>cant_pt</b>
+									
+								</dt>
+								<dd>cantidad de puntos</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>p_density</b>
+									
+								</dt>
+								<dd>densidad</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="CreateTri"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>CreateTri</b>(ax, ay, bx, by, cx, cy, p_density)
+					
+					</div>
+					<div class="description">
+						Interface para la creacion de cuerpos rigidos: Crea un triangulo
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>ax</b>
+									
+								</dt>
+								<dd>coordenada x punto a</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>ay</b>
+									
+								</dt>
+								<dd>coordenada y punto a</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>bx</b>
+									
+								</dt>
+								<dd>coordenada x punto b</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>by</b>
+									
+								</dt>
+								<dd>coordenada y punto b</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>cx</b>
+									
+								</dt>
+								<dd>coordenada x punto c</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>cy</b>
+									
+								</dt>
+								<dd>coordenada y punto c</dd>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>p_density</b>
+									
+								</dt>
+								<dd>densidad</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="IntegrateForces"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>IntegrateForces</b>(dt)
+					
+					</div>
+					<div class="description">
+						<P> Ecuaciones de newton que tenemos que integrar para computar la posicion del cuerpo rigido</P>
+<P>  Acceleration</P>
+<P>     F = mA</P>
+<P>  => A = F * 1/m</P>
+<P>  Explicit Euler</P>
+<P>  x += v * dt</P>
+<P>  v += (1/m * F) * dt</P>
+<P>  Symplectic Euler</P>
+<P>  v += (1/m * F) * dt</P>
+<P>  x += v * dt</P>
+<P>  Para integrar conviene hacerlo en 2 etapas, avanzando el tiempo por la mitad. La explicacion se puede encontrar aca</P>
+<P>  http://www.niksula.hut.fi/~hkankaan/Homepages/gravity.html</P>
+<P>  se supone que dt = elapsed_time / 2</P>
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>dt</b>
+									
+								</dt>
+								<dd>elapsed time / 2</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="IntegrateVelocity"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>IntegrateVelocity</b>(dt)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>dt</b>
+									
+								</dt>
+								<dd>elapsed time / 2</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="Render"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>Render</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="SetInertia"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>SetInertia</b>(I)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>I</b>
+									
+								</dt>
+								<dd>intercia</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="SetMass"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>SetMass</b>(m)
+					
+					</div>
+					<div class="description">
+						<P> independientemente que las clases geometrias (circulos y poligonos) puedan computar la masa y el momento de inercia
+	a partir de la definicion usando conceptos geometricos. Muchas veces en el contexto de una simulacion, el cuerpo rigido
+	es una simplificacion de un cuerpo mas complicado, y es preferible "tunear" a mano los valores de masa e inercia como 
+	si fueran un parametro de diseño</P>
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>m</b>
+									
+								</dt>
+								<dd>masa</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="SetOrient"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>SetOrient</b>(angle)
+					
+					</div>
+					<div class="description">
+						Para el caso 2d la orientacion es un ángulo, representa el angulo de giro sobre el eje Z que pasa por el CM
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{float}</span> <b>angle</b>
+									
+								</dt>
+								<dd>angulo de giro en radianes</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="SetStatic"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>SetStatic</b>()
+					
+					</div>
+					<div class="description">
+						pone en cero el inverso de la masa indicando que el cuerpo está estático.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="SetStaticEquilibrium"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>SetStaticEquilibrium</b>()
+					
+					</div>
+					<div class="description">
+						<P> lo pone en equilibrio estable, esto quiere decir que mientras no actue ninguna fuerza externa que no sea 
+ la gravedad, el cuerpo se comporta como un objeto estatico, es decir con masa infinita
+ En la practica lo unico que hacemos es poner el inverso de la masa en cero, para que no acelere mas
+ Sin embargo a diferfencia de los objetos estaticos, la masa del cuerpo sigue siendo positiva (y no cero = infinito)
+ de esta forma, se distingue entre un objeto estatico pp dicho, de otro que esta en equilibrio estable por el momento.</P>
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu May 14 2015 12:35:54 GMT-0300 (ART)
+		</div>
+	</body>
+</html>

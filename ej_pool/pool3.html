@@ -1,0 +1,276 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+
+<script type="text/javascript" src="../engine/math.js"></script>
+<script type="text/javascript" src="../engine/body.js"></script>
+<script type="text/javascript" src="../engine/world.js"></script>
+<script type="text/javascript" src="../engine/collision.js"></script>
+<script type="text/javascript" src="../engine/contact.js"></script>
+<script type="text/javascript" src="../engine/constraint.js"></script>
+<script type="text/javascript" src="../engine/ragdall.js"></script>
+
+<script type="text/javascript">
+
+var elapsed_time = 1/60;
+var canvas;
+var ctx;
+var	ex = 10;
+var ey = 10;
+var ox = 20;
+var oy = 20;
+
+// posicion del mouse
+var mouse_x = 0;
+var mouse_y = 0;
+
+var gravity = new Vector2( 0, 0 );
+var fixed_dt = 1.0/60.0;								// avance del tiempo constante
+var _world = new World();
+var init = false;
+
+var bola_blanca = null;
+var palo = null;
+var intensidad = 20;
+
+var ID_BOLA_BLANCA			= 999;
+var ID_PALO					= 998;
+
+var status = 0 | 0;
+
+
+// devuelve true si el palo colisiona con la bola blanca
+function colisiona_bola_blanca()
+{
+	var colisiona = false;
+	for(var i=0;i<_world.m_contactCount && !colisiona;++i)
+	{
+		var Contact = _world.contacts[i];
+		if(	(Contact.A.id==ID_BOLA_BLANCA && Contact.B.id==ID_PALO) ||
+			(Contact.B.id==ID_BOLA_BLANCA && Contact.A.id==ID_PALO) )
+		{
+			// el palo colisiona con la bola blanca
+			colisiona = true;
+		}
+	}
+	
+	return colisiona;
+}
+
+function Update() 
+{
+    _world.Update(elapsed_time);
+	if(status==1)
+	{
+		// verifico si colisiono contra la bola blanca
+		if(colisiona_bola_blanca())
+			// el palo colisiona con la bola blanca
+			// pongo el status en 2 
+			status = 2;
+	}
+	else
+	if(status==2)
+	{
+		// verifico si ya no colisiona mas conla bola blanca
+		if(!colisiona_bola_blanca())
+		{
+			// el palo NO colisiona con la bola blanca
+			palo.angularVelocity = palo.velocity.x = palo.velocity.y = 0;
+			palo.position.x = 0;
+			palo.position.y = 10;
+			palo.SetOrient(0);
+			// pongo el status en 0 
+			status = 0;
+		}
+	}
+}
+
+function Render() 
+{
+    if (canvas.getContext)
+    {
+        // borro la pantalla
+        ctx.fillStyle = 'rgba(0,0,0,255)';
+        ctx.fillRect(0,0,2000,2000);
+		// dibujo la escena esquematica con el motor 
+	    _world.Render();
+		// el palo lo dibujo otra vez arriba de todo
+		palo.Render();
+    }
+}
+
+
+function RenderLoop() 
+{
+    if (!init)
+		return;
+    
+	Update();
+	Render();
+}
+
+
+function doKeyDown(e) 
+{
+    e = e || window.event;
+	var xPos = (mouse_x-ox)/ ex; 
+	var yPos = (mouse_y-oy)/ ey; 
+	
+	if(status!=0)
+		return;
+		
+	if(e.keyCode==32)
+	{
+		// espacio
+		palo.velocity.x = Math.cos(palo.orient)*intensidad;
+		palo.velocity.y = Math.sin(palo.orient)*intensidad;
+		status = 1;
+	}
+	else
+	if(e.keyCode==65 )
+	{
+		// "A"
+		palo.SetOrient( palo.orient + 0.05);
+	}
+	else
+	if(e.keyCode==83)
+	{
+		// "S"
+		palo.SetOrient( palo.orient - 0.05);
+	}
+	else
+	if(e.keyCode==40)
+	{
+		// "abajo"
+		palo.position.y+=0.3;
+	}
+	else
+	if(e.keyCode==38)
+	{
+		// "arriba"
+		palo.position.y-=0.3;
+	}
+	else
+	if(e.keyCode==39)
+	{
+		// "derecha"
+		palo.position.x+=0.3;
+	}
+	else
+	if(e.keyCode==37)
+	{
+		// "izquierda"
+		palo.position.x-=0.3;
+	}
+}
+
+function onMouseMove() 
+{
+	var xPos = window.event.offsetX;
+	var yPos = window.event.offsetY;
+
+    // actualizo la posicion del mouse
+	mouse_x = xPos;
+	mouse_y = yPos;
+}
+
+function onMouseDown(e) {
+    e = e || window.event;
+    switch (e.which)
+    {
+        case 1:
+            // Left button
+            break;
+        case 2:
+            // middle button
+            break;
+        case 3:
+            // right button
+            break;
+    }
+}
+
+
+function onMouseUp(e) {
+    e = e || window.event;
+    switch (e.which) {
+        case 1:
+            // Left button
+            break;
+        case 2:
+            // middle button
+            break;
+        case 3:
+            // right button
+            break;
+    }
+}
+
+function loadscene()
+{
+	// posicion y tamaño de la mesa de pool
+	var OX = 10;
+	var OY = 5;
+	var DX = 70;
+	var DY = 40;
+	var r = 3;
+	
+	// bola blanca
+    bola_blanca = _world.AddCircle(OX+10,OY+DY/2,2);
+	bola_blanca.id = ID_BOLA_BLANCA;
+	bola_blanca.dynamicFriction = 1;
+	
+	// palo
+    palo = _world.AddBox(OX-3,OY+DY/2,10,1);
+	palo.collider_list = [bola_blanca];
+	palo.id = ID_PALO;
+	
+	// arriba
+	var vert = [new Vector2(OX,OY) , new Vector2(OX + DX,OY) , new Vector2(OX + DX - 2*r,OY+r) , new Vector2(OX + 2*r,OY+r)]
+    var p = _world.AddPoly(vert,4);
+    p.SetStatic();
+	
+	// abajo
+	vert = [new Vector2(OX,OY+DY) , new Vector2(OX + DX,OY+DY) , new Vector2(OX + DX - 2*r,OY+DY -r) , new Vector2(OX + 2*r,OY+DY-r)]
+    p = _world.AddPoly(vert,4);
+    p.SetStatic();
+	
+	// izquierda
+	vert = [new Vector2(OX,OY) , new Vector2(OX ,OY+DY) , new Vector2(OX +r,OY+DY -2*r) , new Vector2(OX +r,OY+2*r)]
+    p = _world.AddPoly(vert,4);
+    p.SetStatic();
+
+	// derecha
+	vert = [new Vector2(OX+DX,OY) , new Vector2(OX+DX ,OY+DY) , new Vector2(OX+DX-r,OY+DY -2*r) , new Vector2(OX +DX -r,OY+2*r)]
+    p = _world.AddPoly(vert,4);
+    p.SetStatic();
+	
+	
+	
+	// anulo la gravedad
+	gravity.y = 0;
+    init = true;
+
+}
+
+function main()
+{   
+	document.addEventListener( "keydown", doKeyDown, true);
+	document.addEventListener("mousemove", onMouseMove, true);
+	document.addEventListener("mousedown", onMouseDown, true);
+	document.addEventListener("mouseup", onMouseUp, true);
+
+    canvas = document.getElementById('mycanvas');
+    ctx = canvas.getContext('2d');
+	loadscene();
+    setInterval(RenderLoop, elapsed_time * 1000);
+} 
+
+
+</script>
+</head>
+<body onload="main();">
+	<canvas id="mycanvas" width="900" height="600"></canvas>
+</body>
+</html>
+ 

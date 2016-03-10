@@ -1,0 +1,259 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+
+<script type="text/javascript" src="../engine/math.js"></script>
+<script type="text/javascript" src="../engine/body.js"></script>
+<script type="text/javascript" src="../engine/world.js"></script>
+<script type="text/javascript" src="../engine/collision.js"></script>
+<script type="text/javascript" src="../engine/contact.js"></script>
+<script type="text/javascript" src="../engine/constraint.js"></script>
+<script type="text/javascript" src="../engine/ragdall.js"></script>
+
+<script type="text/javascript">
+
+var elapsed_time = 1/60;
+var canvas;
+var ctx;
+var	ex = 10;
+var ey = 10;
+var ox = 20;
+var oy = 20;
+
+// posicion del mouse
+var mouse_x = 0;
+var mouse_y = 0;
+
+var gravityScale = 5.0;
+var gravity = new Vector2( 0, 10 * gravityScale );
+var fixed_dt = 1.0/60.0;								// avance del tiempo constante
+var _world = new World();
+
+var init = false;
+
+var img_explosion = new Image(); 
+var total_explosion = 2;
+
+
+function Update() 
+{
+    _world.Update(elapsed_time);
+
+	// Reviso los contactos a ver si toca contra la bola azul
+    for(var i=0;i<_world.m_contactCount;++i)
+	{
+        var Contact = _world.contacts[i];
+		var obj_roto = null;
+		if(Contact.A.id==999 && Contact.B.inverseMass>0)
+		{
+			// Hago explotar el objeto B
+			obj_roto = Contact.B;
+		}
+		else
+		if(Contact.B.id==999 && Contact.A.inverseMass>0)
+		{
+			// Hago explotar el objeto A
+			obj_roto = Contact.A;
+		}
+		
+		if(obj_roto != null)
+		{
+			// reviento al objeto: inicio una explosion
+			obj_roto.timer_explosion = total_explosion;
+		}
+
+	}		
+	
+	// verifico si hay explosiones en cursor
+	for(var i=0;i<_world.m_bodyCount;++i)
+	{
+        var body = _world.bodies[i];
+		if (typeof  body.timer_explosion != "undefined") 
+		{
+			if(body.timer_explosion>0)
+			{
+				body.timer_explosion -= elapsed_time;
+				if(body.timer_explosion<0)
+				{
+					// termina la explosion
+					body.timer_explosion = 0;
+					// marco el objeto para borrar
+					body.deleted = true;
+					body.visible = false;
+				}
+			}
+		}
+	}
+}
+
+function Render() 
+{
+    if (canvas.getContext)
+    {
+        // borro la pantalla
+        ctx.fillStyle = 'rgba(0,0,0,255)';
+        ctx.fillRect(0,0,2000,2000);
+		// dibujo la escena esquematica con el motor 
+	    _world.Render(ctx,ox,oy,ex,ey);
+		
+		// dibujo explosiones pendientes
+		for(var i=0;i<_world.m_bodyCount;++i)
+		{
+			var body = _world.bodies[i];
+			if (typeof  body.timer_explosion != "undefined") 
+			{
+				if(body.timer_explosion>0)
+				{
+					// dibujo la explosion
+					// que nro de imagen es
+					var nro_imagen = ( 20 - body.timer_explosion / total_explosion * 19 ) | 0;
+					var fil = nro_imagen % 4;
+					var col = (nro_imagen / 4) | 0;
+					var dx = 1280 / 4;
+					var dy = 1200 / 5;
+					var explo_dr = 150;
+					
+					ctx.drawImage(img_explosion,fil*dx,col*dy , dx,dy ,
+						ox + (body.position.x-4*body.width/2)*ex, 
+						oy + (body.position.y-4*body.height/2)*ey,
+						4*body.width*ex,4*body.height*ey);
+
+				}
+			}
+		}
+		
+		
+    }
+}
+
+
+function RenderLoop() 
+{
+    if (!init)
+		return;
+    
+	Update();
+	Render();
+}
+
+
+function doKeyDown(e) 
+{
+	var xPos = (mouse_x-ox)/ ex; 
+	var yPos = (mouse_y-oy)/ ey; 
+}
+
+function onMouseMove() 
+{
+	var xPos = window.event.offsetX;
+	var yPos = window.event.offsetY;
+
+    // actualizo la posicion del mouse
+	mouse_x = xPos;
+	mouse_y = yPos;
+}
+
+function onMouseDown(e) {
+    e = e || window.event;
+    switch (e.which)
+    {
+        case 1:
+            // Left button
+            break;
+        case 2:
+            // middle button
+            break;
+        case 3:
+            // right button
+            break;
+    }
+}
+
+
+function onMouseUp(e) {
+    e = e || window.event;
+    switch (e.which) {
+        case 1:
+            // Left button
+            break;
+        case 2:
+            // middle button
+            break;
+        case 3:
+            // right button
+            break;
+    }
+}
+
+function loadscene()
+{
+	// Creo un piso
+    var p = _world.AddBox(40, 60, 80, 5);
+    p.SetStatic();
+	p = _world.AddBox(40, 0, 80, 5);
+    p.SetStatic();
+    p = _world.AddBox(2.5, 30, 5, 55);
+    p.SetStatic();
+    p = _world.AddBox(80-2.5, 30, 5, 55);
+    p.SetStatic();
+
+	// Creo un circulo
+	for(i=0;i<20;++i)
+	{
+		p = _world.AddCircle(Math.random()*40,Math.random()*40,1+Math.random()*2);
+		var angle = 2*Math.random()*Math.PI;
+		var vel = 50;
+		p.velocity = new Vector2(Math.cos(angle)*vel , Math.sin(angle)*vel);
+		p.restitution = 1;
+		p.staticFriction = 0.0;          
+		p.dynamicFriction = 0.0;   
+		p.timer_explosion = 0;
+	}
+
+
+	for(i=0;i<4;++i)
+	for(j=0;j<4;++j)
+	{
+		p = _world.AddBox(10+20*i,10+20*j,5,4);
+		p.velocity = new Vector2(0,0);
+		p.restitution = 1;
+		p.SetStatic();
+		p.color = 'rgba(255,255,192,255)'
+	}
+	
+	p = _world.AddCircle(10,10,1);
+	p.color = 'rgba(192,0,0,255)'
+	p.id = 999;
+	
+
+	// anulo la gravedad
+	 gravity.y = 0;
+	
+    init = true;
+
+}
+
+function main()
+{   
+	document.addEventListener( "keydown", doKeyDown, true);
+	document.addEventListener("mousemove", onMouseMove, true);
+	document.addEventListener("mousedown", onMouseDown, true);
+	document.addEventListener("mouseup", onMouseUp, true);
+
+    canvas = document.getElementById('mycanvas');
+    ctx = canvas.getContext('2d');
+	img_explosion.src = 'explosion.png';
+		
+	loadscene();
+	
+    setInterval(RenderLoop, elapsed_time * 1000);
+} 
+
+
+</script>
+</head>
+<body onload="main();">
+	<canvas id="mycanvas" width="1000" height="700"></canvas>
+</body>
+</html>
+ 
